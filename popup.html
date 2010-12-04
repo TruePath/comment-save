@@ -1,50 +1,100 @@
+<head>
 <style>
-body {
-  min-width:357px;
-  overflow-x:hidden;
+tr {
+  white-space: nowrap;
 }
-
-img {
-  margin:5px;
-  border:2px solid black;
-  vertical-align:middle;
-  width:75px;
-  height:75px;
+.results {
+  text-align: right;
+  min-width: 6em;
+  color: black;
 }
 </style>
-
 <script>
-var req = new XMLHttpRequest();
-req.open(
-    "GET",
-    "http://api.flickr.com/services/rest/?" +
-        "method=flickr.photos.search&" +
-        "api_key=90485e931f687a9b9c2a66bf58a3861a&" +
-        "text=hello%20world&" +
-        "safe_search=1&" +  // 1 is "safe"
-        "content_type=1&" +  // 1 is "photos only"
-        "sort=relevance&" +  // another good one is "interestingness-desc"
-        "per_page=20",
-    true);
-req.onload = showPhotos;
-req.send(null);
 
-function showPhotos() {
-  var photos = req.responseXML.getElementsByTagName("photo");
-
-  for (var i = 0, photo; photo = photos[i]; i++) {
-    var img = document.createElement("image");
-    img.src = constructImageURL(photo);
-    document.body.appendChild(img);
-  }
+/*function setChildTextNode(elementId, text) {
+  document.getElementById(elementId).innerText = text;
 }
 
-// See: http://www.flickr.com/services/api/misc.urls.html
-function constructImageURL(photo) {
-  return "http://farm" + photo.getAttribute("farm") +
-      ".static.flickr.com/" + photo.getAttribute("server") +
-      "/" + photo.getAttribute("id") +
-      "_" + photo.getAttribute("secret") +
-      "_s.jpg";
+// Tests the roundtrip time of sendRequest().
+function testRequest() {
+  setChildTextNode("resultsRequest", "running...");
+
+  chrome.tabs.getSelected(null, function(tab) {
+    var timer = new chrome.Interval();
+    timer.start();
+
+    chrome.tabs.sendRequest(tab.id, {counter: 1}, function handler(response) {
+      if (response.counter < 1000) {
+        chrome.tabs.sendRequest(tab.id, {counter: response.counter}, handler);
+      } else {
+        timer.stop();
+        var usec = Math.round(timer.microseconds() / response.counter);
+        setChildTextNode("resultsRequest", usec + "usec");
+      }
+    });
+  });
 }
+
+// Tests the roundtrip time of Port.postMessage() after opening a channel.
+function testConnect() {
+  setChildTextNode("resultsConnect", "running...");
+
+  chrome.tabs.getSelected(null, function(tab) {
+    var timer = new chrome.Interval();
+    timer.start();
+
+    var port = chrome.tabs.connect(tab.id);
+    port.postMessage({counter: 1});
+    port.onMessage.addListener(function getResp(response) {
+      if (response.counter < 1000) {
+        port.postMessage({counter: response.counter});
+      } else {
+        timer.stop();
+        var usec = Math.round(timer.microseconds() / response.counter);
+        setChildTextNode("resultsConnect", usec + "usec");
+      }
+    });
+  });
+}*/
+
+// Listen to events
+chrome.extension.onConnect.addListener(function(port) {
+  // check port name - "comment"
+  console.assert(port.name == "comment");
+  // get the message
+  // values:
+  //({id: newId}, {title: document.tile}, {url: document.URL}, {time: timestamp}, {text: this.value});
+  port.onMessage.addListener(function(msg) {
+  		var divTag = document.createElement("div");
+        
+        divTag.id = msg.id;
+        
+        divTag.setAttribute("align","center");
+        
+        divTag.style.margin = "0px auto";
+        
+        divTag.className ="dynamicDiv";
+        
+        divTag.innerHTML = msg.text + "\n" + msg.timestamp;
+        
+        document.body.appendChild(divTag);
+	
+	
+  });
+});
+
+
 </script>
+</head>
+<body>
+<!--<table>
+  <tr>
+    <td><button onclick="testRequest()">Measure sendRequest</button></td>
+    <td id="resultsRequest" class="results">(results)</td>
+  </tr>
+  <tr>
+    <td><button onclick="testConnect()">Measure postMessage</button></td>
+    <td id="resultsConnect" class="results">(results)</td>
+  </tr>
+</table>-->
+</body>
