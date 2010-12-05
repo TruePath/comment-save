@@ -1,100 +1,180 @@
-<head>
-<style>
-tr {
-  white-space: nowrap;
-}
-.results {
-  text-align: right;
-  min-width: 6em;
-  color: black;
-}
-</style>
-<script>
+<html>
+  <head>
+    <style>
+	  	.my_table {
+	  	   margin:2px;
+	  	   font-family:Arial;
+	  	   font-size:11px;
+	  	   border: solid 1px #aaaaaa;
+		}
 
-/*function setChildTextNode(elementId, text) {
-  document.getElementById(elementId).innerText = text;
-}
+		.my_table tr.odd {
+		  background-color:#fff5cc;
+		}
 
-// Tests the roundtrip time of sendRequest().
-function testRequest() {
-  setChildTextNode("resultsRequest", "running...");
+		.my_table tr.even {
+		  background-color:#ffffff;
+		}
 
-  chrome.tabs.getSelected(null, function(tab) {
-    var timer = new chrome.Interval();
-    timer.start();
+		.my_table td {
+		  padding: 3px;
+		  vertical-align:top;
+		}
 
-    chrome.tabs.sendRequest(tab.id, {counter: 1}, function handler(response) {
-      if (response.counter < 1000) {
-        chrome.tabs.sendRequest(tab.id, {counter: response.counter}, handler);
-      } else {
-        timer.stop();
-        var usec = Math.round(timer.microseconds() / response.counter);
-        setChildTextNode("resultsRequest", usec + "usec");
+		.my_table td.rborder {
+		  border-right: solid 1px #aaaaaa;
+		}
+
+		.my_table td.bborder {
+		  border-bottom: solid 1px #aaaaaa;
+		}
+
+		.my_table td.tborder {
+		  border-top: solid 1px #aaaaaa;
+		}
+
+		.my_table td.ralign {
+		  text-align: right;
+		}
+
+		.my_table td.calign {
+		  text-align: center;
+		}
+
+		.my_table tr.heading td {
+		  padding: 5px;
+		  font-weight: bold;
+		  text-align: center;
+		  background-color: #aff2fb;
+		}
+
+		.my_table td.odd {
+		  background-color: #aff2fb;
+		}
+
+		.my_table td.even {
+		  background-color: #ffffff;
+		}
+
+		.style1 {
+			font-size: 12px;
+			font-weight: bold;
+			color: #000000;
+			line-height: 1.5;
+	   }
+    </style>
+    <script>
+      var logging = false;
+      var key1 = "newID1";
+	  var key2 = "NameMinus1";
+	  var key3 = "NameMinus2";
+	  var val1;
+	  var val2;
+      var val3;
+      function populate() {
+        log('entered populate()');
+        val1 = getValue(key1);
+        val2 = getValue(key2);
+        val3 = getValue(key3);
+        updateValues();
+        log('leaving populate()');
       }
-    });
-  });
-}
+      function store() {
+        log('entered store()');
 
-// Tests the roundtrip time of Port.postMessage() after opening a channel.
-function testConnect() {
-  setChildTextNode("resultsConnect", "running...");
+        logAllKeyValues();
 
-  chrome.tabs.getSelected(null, function(tab) {
-    var timer = new chrome.Interval();
-    timer.start();
+        var oldName = chrome.extension.getBackgroundPage().getItem(key1);
+        var newName = document.form1.fname.value;
+        log('About to Update');
+        val3 = val2;
+        val2 = val1;
+        val1 = newName;
 
-    var port = chrome.tabs.connect(tab.id);
-    port.postMessage({counter: 1});
-    port.onMessage.addListener(function getResp(response) {
-      if (response.counter < 1000) {
-        port.postMessage({counter: response.counter});
-      } else {
-        timer.stop();
-        var usec = Math.round(timer.microseconds() / response.counter);
-        setChildTextNode("resultsConnect", usec + "usec");
+        logAllKeyValues();
+
+        chrome.extension.getBackgroundPage().setItem(key1,val1);
+        chrome.extension.getBackgroundPage().setItem(key2,val2);
+        chrome.extension.getBackgroundPage().setItem(key3,val3);
+        updateValues();
+
+        log('leaving store()');
+
       }
-    });
-  });
-}*/
+      function getValue(key) {
+        return chrome.extension.getBackgroundPage().getItem(key);
+      }
 
-// Listen to events
-chrome.extension.onConnect.addListener(function(port) {
-  // check port name - "comment"
-  console.assert(port.name == "comment");
-  // get the message
-  // values:
-  //({id: newId}, {title: document.tile}, {url: document.URL}, {time: timestamp}, {text: this.value});
-  port.onMessage.addListener(function(msg) {
-  		var divTag = document.createElement("div");
-        
-        divTag.id = msg.id;
-        
-        divTag.setAttribute("align","center");
-        
-        divTag.style.margin = "0px auto";
-        
-        divTag.className ="dynamicDiv";
-        
-        divTag.innerHTML = msg.text + "\n" + msg.timestamp;
-        
-        document.body.appendChild(divTag);
-	
-	
-  });
-});
+      function updateValues() {
+        document.getElementById('val1').innerHTML = val1;
+        document.getElementById('val2').innerHTML = val2;
+        document.getElementById('val3').innerHTML = val3;
+      }
+      function logAllKeyValues() {
+        log(key1 + ":" + val1);
+	    log(key2 + ":" + val2);
+        log(key3 + ":" + val3);
+      }
+      function clearStorage() {
+	    log('inside clear');
+	      try {
+	        chrome.extension.getBackGroundPage().clearStrg();
+	      }catch(e) {
+	        console.log("error while clearing local storage");
+	        console.log(e);
+	      }
 
+	      document.getElementById('val1').innerHTML = "";
+	      document.getElementById('val2').innerHTML = "";
+	      document.getElementById('val3').innerHTML = "";
+	      val1 = null;
+	      val2 = null;
+	      val3 = null;
 
-</script>
-</head>
-<body>
-<!--<table>
-  <tr>
-    <td><button onclick="testRequest()">Measure sendRequest</button></td>
-    <td id="resultsRequest" class="results">(results)</td>
-  </tr>
-  <tr>
-    <td><button onclick="testConnect()">Measure postMessage</button></td>
-    <td id="resultsConnect" class="results">(results)</td>
-  </tr>
-</table>-->
-</body>
+      }
+      function log(txt) {
+        if(logging) {
+          chrome.extension.getBackgroundPage().log(txt);
+        }
+      }
+
+    </script>
+  </head>
+  <body onload='populate()'>
+    <form name='form1'>
+      <table class="my_table" cellpadding="0" cellspacing="0" width=200px>
+        <tr>
+	  	  <td class="style1" colspan="2" align="center">Local Storage Sample</td>
+	  	</tr>
+	  	<tr class="odd">
+		  <td class="rborder" >Please Enter the name</td>
+		  <td class="ralign"><input type='text' size='6' name='fname'/></td>
+		</tr>
+		<tr class="even">
+		  <td class="rborder" colspan="2" align='center'>
+		    <input type='submit' value='store' OnClick='store()'/>
+		    <input type='submit' value='clear' OnClick='clearStorage()'/></td>
+	    </tr>
+		<tr class="odd"
+		  <td class="rborder"></td>
+		  <td class="ralign"></td>
+		</tr>
+		<tr class="even">
+		<td colspan="2">Previous Values Stored</td>
+		</tr>
+		<tr class="odd"
+		  <td class="rborder">Last Value stored 1</td>
+		  <td class="ralign"><div id='val1'/></td>
+		</tr>
+		<tr class="even"
+		  <td class="rborder">Last Value stored 2</td>
+		  <td class="ralign"><div id='val2'/></td>
+		</tr>
+		<tr class="odd"
+	      <td class="rborder">Last Value stored 3</td>
+		  <td class="ralign"><div id='val3'/></td>
+		</tr>
+      </table>
+    </form>
+  </body>
+</html>

@@ -2,7 +2,10 @@
   "name": "Comment Save",
   "version": "0.1",
   "description": "Saves comments.",
-  "permissions": ["tabs"],
+  "background_page": "background.html",
+  "permissions": [
+    "tabs", "http://*/*", "https://*/*"
+   ],
   "content_scripts": [
     {
       "matches": ["http://*/*"],

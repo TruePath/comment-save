@@ -1,0 +1,157 @@
+<html>
+<head>
+<script>
+  var logging  = false;
+
+  ////////// HTML5 WEB DB BEGIN //////////////
+  var database = {};
+  database.webdb = {};
+
+  database.webdb.db = null;
+  
+  try {
+  chrome.extension.onConnect.addListener(function(port) {
+   		// check port name - "comment"
+  		console.assert(port.name == "comment");
+		console.log("Tried to log");
+		console.log(port.name);
+  		// get the message
+  		// values:
+  		// {id: newId, text: this.value, title: document.tile, url: document.URL, time: timestamp});
+ 	 	port.onMessage.addListener(function(msg) {
+	    	console.log("Message: " + msg.id + "," + msg.text + "," + msg.title + "," + msg.url + "," + msg.time);
+  			
+			// LOCAL STORAGE
+			setItem(msg.id, msg.text);
+			
+			// WEBDB STORAGE
+			database.webdb.addComment(msg);
+  		});
+});
+  } catch(e) {
+      log("Error: " + e);
+  }
+
+  
+ ///////////// LOCAL STORAGE START /////////////////////////
+  function setItem(key, value) {
+    try {
+      log("Inside setItem:" + key + ":" + value);
+      window.localStorage.removeItem(key);
+      window.localStorage.setItem(key, value);
+    }catch(e) {
+      log("Error inside setItem");
+      log(e);
+    }
+    log("Return from setItem" + key + ":" +  value);
+  }
+  function getItem(key) {
+    var value;
+    log('Get Item:' + key);
+    try {
+      value = window.localStorage.getItem(key);
+    }catch(e) {
+      log("Error inside getItem() for key:" + key);
+	  log(e);
+	  value = "null";
+    }
+    log("Returning value: " + value);
+    return value;
+  }
+
+  function clearStrg() {
+    log('about to clear local storage');
+    window.localStorage.clear();
+    log('cleared');
+  }
+
+  function log(txt) {
+    if(logging) {
+      console.log(txt);
+    }
+  }
+////////////// LOCAL STORAGE END /////////////////  
+
+// open the db
+database.webdb.open = function() {
+  var dbSize = 5 * 1024 * 1024; // 5MB
+  log("Size is " + dbSize);
+  try {
+  	database.webdb.db = openDatabase('Comments', '1.0', 'saves comments', dbSize);
+	log(database.webdb.db);
+  } catch (e) {
+    log(e);
+  }
+}
+
+// handling error
+database.webdb.onError = function(tx, e) {
+  log('Something unexpected happened: ' + e.message );
+}
+
+// on success
+database.webdb.onSuccess = function(tx, r) {
+  // re-render all the data
+  // loadTodoItems is defined in Step 4a
+  //database.webdb.getAllTodoItems(loadTodoItems);
+  log('DB opened successfully');
+}
+
+// create/open the table
+database.webdb.createTable = function() {
+  database.webdb.db.transaction(function(tx) {
+    tx.executeSql('CREATE TABLE IF NOT EXISTS ' + 
+                  'comment(ID INTEGER PRIMARY KEY ASC, url TEXT, title TEXT, timestamp TEXT, comment TEXT)', []); // should use DATETIME for timestamp
+				  });
+}
+
+
+// add data to table
+database.webdb.addComment = function(msg) {
+  database.webdb.db.transaction(function(tx){
+    var addedOn = new Date();
+    tx.executeSql('INSERT INTO comment(url, title, timestamp, comment) VALUES (?,?,?,?)', 
+        [msg.url, msg.title, msg.time, msg.text],
+        database.webdb.onSuccess,
+        database.webdb.onError);
+    });
+}
+
+// delete row from a table given the id
+database.webdb.deleteComment = function(id) {
+  database.webdb.db.transaction(function(tx) {
+    tx.executeSql('DELETE FROM comment WHERE ID=?', [id],
+        database.webdb.onSuccess, database.webdb.onError);
+  });
+}
+
+// deletes all the rows from the "comment" table
+// TODO: Read in the # of rows
+function deleteAll() {
+	var i = 152;
+	var max = 193;
+	while (i != max) {
+		database.webdb.deleteComment(i);
+		i++;
+	}
+}
+
+
+// initialization
+function initDB() {
+	database.webdb.open();
+	database.webdb.createTable();
+	
+	// Deletion - just to remove everything
+	//deleteAll();
+}
+
+</script>
+</head>
+
+<body onload="initDB();">
+</body>
+</html>
+
+
+

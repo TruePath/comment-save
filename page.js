@@ -48,17 +48,27 @@ function sendMessage(){
     if (!this.id) {
 	    newId = "newID" + id++;
 		this.id = newId;
-		alert("New ID: " + this.id);
+		//alert("New ID: " + this.id);
 	}
 	else {
 	    newId = this.id;
+		//alert("New ID " + newId);
 	}
 	
 	// get the timestamp
 	var timestamp = getTimestamp();
+	//alert("Timestamp: " + timestamp + ", Title: " + document.title);
 	
 	// post the message
-    port.postMessage({id: newId}, {title: document.tile}, {url: document.URL}, {time: timestamp}, {text: this.value});
+    //port.postMessage({id: newId}), {title: document.tile}, {url: document.URL}, {time: timestamp}, {text: this.value});
+	
+	var title1 = document.title;
+	try {
+		port.postMessage({id: newId, text: this.value, title: title1, url: document.URL, time: timestamp});
+	} catch(e) {
+		alert("There was an error: " + e);
+	}
+	
 }
 
 // called when document is loaded - TODO: Should use JQuery instead
@@ -66,6 +76,7 @@ function begin()
 {  
    var textareas = document.getElementsByTagName('textarea');  
    var len = textareas.length;
+   alert("Length is: " + len);
    var i;  
    for(i = 0; i < len; i++) {    
         textareas[i].onkeydown = sendMessage; 
