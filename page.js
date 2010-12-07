@@ -76,7 +76,7 @@ function begin()
 {  
    var textareas = document.getElementsByTagName('textarea');  
    var len = textareas.length;
-   alert("Length is: " + len);
+   //alert("Length is: " + len);
    var i;  
    for(i = 0; i < len; i++) {    
         textareas[i].onkeydown = sendMessage; 
