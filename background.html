@@ -150,15 +150,7 @@ database.webdb.addComment = function(msg) {
   database.webdb.db.transaction(function(tx){
     var addedOn = new Date();
 	
-	// first check to see if it exists or not
-	/*var row;
-	database.webdb.db.transaction(function(tx) {
-    	tx.executeSql('SELECT * FROM comment WHERE ID=?', [msg.id], row, 
-        	database.webdb.onError);
-  	});*/
-	
-	//
-	
+	// check to see if the data already exists or not
 	database.webdb.getComment(getCommentCB, msg.id);
 	console.log("Row: " + row);
 	
@@ -172,8 +164,16 @@ database.webdb.addComment = function(msg) {
     }
 	else {
 		console.log("Found Row! - updating");
-		tx.executeSql('INSERT INTO comment(ID, comment, title, url, timestamp) VALUES (?,?,?,?,?)', 
-    	    [msg.id, msg.text, msg.title, msg.url, msg.time],
+		
+		// Update comment
+		tx.executeSql('UPDATE comment SET comment=? WHERE ID=?', 
+    	    [msg.text, msg.id],
+    	    database.webdb.onSuccess,
+    	    database.webdb.onError);
+		
+		// Update timestamp
+		tx.executeSql('UPDATE comment SET timestamp=? WHERE ID=?', 
+    	    [msg.time, msg.id],
     	    database.webdb.onSuccess,
     	    database.webdb.onError);
 	}
