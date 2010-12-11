@@ -42,20 +42,23 @@ function getTimestamp() {
 	return date + "," + time;
 }
   
+// id set or not?
+var idSet = 0;
   
 function sendMessage(){
     // get the id - if it already exists good otherwise give it one 
 	
 	// TODO: Assign a new ID from local storage.
 	
-    if (!this.id) {
-	    newId = "newID" + id++;
-		this.id = newId;
-		//alert("New ID: " + this.id);
+	// new ID: involves URL + 
+	if (this.value == '') { // assign new id if textbox is empty 
+		newId = "newID" + id++ + document.URL;
+		idSet = 0;
 	}
-	else {
-	    newId = this.id;
-		//alert("New ID " + newId);
+	//newId = "newID" + id++ + document.URL;
+	if (idSet == 0) {
+		this.id = newId;
+		idSet = 1;		
 	}
 	
 	// get the timestamp
@@ -67,7 +70,7 @@ function sendMessage(){
 	
 	var title1 = document.title;
 	try {
-		port.postMessage({id: newId, text: this.value, title: title1, url: document.URL, time: timestamp});
+		port.postMessage({id: this.id, text: this.value, title: title1, url: document.URL, time: timestamp});
 	} catch(e) {
 		alert("There was an error: " + e);
 	}
@@ -106,7 +109,7 @@ $(document).ready(function(){
    }*/
    
    // attach function to all textareas
-   $("textarea").live('keydown', sendMessage);
+   $("textarea").live('keypress', sendMessage);
    
    
    //alert('Ran ready');
