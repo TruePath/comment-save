@@ -9,7 +9,7 @@
   "content_scripts": [
     {
       "matches": ["http://*/*"],
-      "js": ["page.js"]
+      "js": ["jquery.js", "page.js"]
     }
   ],
   "browser_action": {

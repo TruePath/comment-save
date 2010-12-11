@@ -22,7 +22,7 @@
 	    	console.log("Message: " + msg.id + "," + msg.text + "," + msg.title + "," + msg.url + "," + msg.time);
   			
 			// LOCAL STORAGE
-			setItem(msg.id, msg.text);
+			//setItem(msg.id, msg.text);
 			
 			// WEBDB STORAGE
 			database.webdb.addComment(msg);
@@ -78,15 +78,15 @@ database.webdb.open = function() {
   log("Size is " + dbSize);
   try {
   	database.webdb.db = openDatabase('Comments', '1.0', 'saves comments', dbSize);
-	log(database.webdb.db);
+	console.log(database.webdb.db);
   } catch (e) {
-    log(e);
+    console.log(e);
   }
 }
 
 // handling error
 database.webdb.onError = function(tx, e) {
-  log('Something unexpected happened: ' + e.message );
+  console.log('Something unexpected happened: ' + e.message );
 }
 
 // on success
@@ -97,24 +97,87 @@ database.webdb.onSuccess = function(tx, r) {
   log('DB opened successfully');
 }
 
-// create/open the table
-database.webdb.createTable = function() {
+// drop table
+database.webdb.dropTable = function() {
   database.webdb.db.transaction(function(tx) {
-    tx.executeSql('CREATE TABLE IF NOT EXISTS ' + 
-                  'comment(ID INTEGER PRIMARY KEY ASC, url TEXT, title TEXT, timestamp TEXT, comment TEXT)', []); // should use DATETIME for timestamp
+    tx.executeSql('DROP TABLE comment');
 				  });
 }
 
+// create/open the table
+// {id: newId, text: this.value, title: document.tile, url: document.URL, time: timestamp});
+database.webdb.createTable = function() {
+  database.webdb.db.transaction(function(tx) {
+    tx.executeSql('CREATE TABLE IF NOT EXISTS ' + 
+                  'comment(ID TEXT, comment TEXT, title TEXT, url TEXT, timestamp TEXT)', []); // should use DATETIME for timestamp, ID alternative: ID INTEGER PRIMARY KEY ASC
+				  });
+}
+
+// GLOBAL Variable to check whether it is already in the table or not
+var row = -1; // -1 = no row found
+
+// gets a comment (if it exists) according to id
+// renderFunc = the function callback
+database.webdb.getComment = function(renderFunc, id) {
+  console.log('Id in getcomment = ' + id);
+  database.webdb.db.transaction(function(tx) {
+    tx.executeSql('SELECT * FROM comment WHERE ID=?', [id], renderFunc, 
+        	database.webdb.onError);
+  });
+}
+
+// callback function for checking if a comment exists in the table
+function getCommentCB(tx, rs) {
+	console.log('RS Length = ' + rs.rows.length);
+  	
+  	for (var i=0; i < rs.rows.length; i++) {
+  		console.log('RS ' + i + ' = ' + rs.rows.item(i));
+  	}
+	
+	if (rs.rows.length == 0) // none found
+		row = -1;
+	else
+  		row = rs.rows.item(0);
+  /*var todoItems = document.getElementById('todoItems');
+  todoItems.innerHTML = rowOutput;*/
+}
+
+
 
 // add data to table
+// {id: newId, text: this.value, title: document.tile, url: document.URL, time: timestamp});
 database.webdb.addComment = function(msg) {
   database.webdb.db.transaction(function(tx){
     var addedOn = new Date();
-    tx.executeSql('INSERT INTO comment(url, title, timestamp, comment) VALUES (?,?,?,?)', 
-        [msg.url, msg.title, msg.time, msg.text],
-        database.webdb.onSuccess,
-        database.webdb.onError);
-    });
+	
+	// first check to see if it exists or not
+	/*var row;
+	database.webdb.db.transaction(function(tx) {
+    	tx.executeSql('SELECT * FROM comment WHERE ID=?', [msg.id], row, 
+        	database.webdb.onError);
+  	});*/
+	
+	//
+	
+	database.webdb.getComment(getCommentCB, msg.id);
+	console.log("Row: " + row);
+	
+	// if it exists, UPDATE otherwise INSERT
+	if (row == -1) {
+	    console.log("No row found - creating");
+    	tx.executeSql('INSERT INTO comment(ID, comment, title, url, timestamp) VALUES (?,?,?,?,?)', 
+    	    [msg.id, msg.text, msg.title, msg.url, msg.time],
+    	    database.webdb.onSuccess,
+    	    database.webdb.onError);
+    }
+	else {
+		console.log("Found Row! - updating");
+		tx.executeSql('INSERT INTO comment(ID, comment, title, url, timestamp) VALUES (?,?,?,?,?)', 
+    	    [msg.id, msg.text, msg.title, msg.url, msg.time],
+    	    database.webdb.onSuccess,
+    	    database.webdb.onError);
+	}
+	});
 }
 
 // delete row from a table given the id
@@ -128,8 +191,8 @@ database.webdb.deleteComment = function(id) {
 // deletes all the rows from the "comment" table
 // TODO: Read in the # of rows
 function deleteAll() {
-	var i = 152;
-	var max = 193;
+	var i = 1;
+	var max = 416;
 	while (i != max) {
 		database.webdb.deleteComment(i);
 		i++;
@@ -140,6 +203,7 @@ function deleteAll() {
 // initialization
 function initDB() {
 	database.webdb.open();
+	database.webdb.dropTable(); // just to delete the table
 	database.webdb.createTable();
 	
 	// Deletion - just to remove everything

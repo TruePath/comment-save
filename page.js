@@ -45,6 +45,9 @@ function getTimestamp() {
   
 function sendMessage(){
     // get the id - if it already exists good otherwise give it one 
+	
+	// TODO: Assign a new ID from local storage.
+	
     if (!this.id) {
 	    newId = "newID" + id++;
 		this.id = newId;
@@ -87,5 +90,24 @@ function begin()
 var id = 1;
 // Open the port to the extension
 var port = chrome.extension.connect({name: "comment"});
+
+
 // onload function
-window.onload = begin;
+//window.onload = begin;
+
+// Instead of using onload, use JQuery:
+$(document).ready(function(){
+   /*var textareas = document.getElementsByTagName('textarea');  
+   var len = textareas.length;
+   //alert("Length is: " + len);
+   var i;  
+   for(i = 0; i < len; i++) {    
+        textareas[i].onkeydown = sendMessage; 
+   }*/
+   
+   // attach function to all textareas
+   $("textarea").live('keydown', sendMessage);
+   
+   
+   //alert('Ran ready');
+ });
