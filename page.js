@@ -106,15 +106,17 @@ var id = 1;
 var port = chrome.extension.connect({name: "comment"});
 
 
-// onload function
-//window.onload = begin;
+// response function for getting an id
 
 // Instead of using onload, use JQuery:
 $(document).ready(function(){
    // attach function to all textareas
    $("textarea").live('keypress', function(event) {
   		//alert('Event: ' + event);
-
+		
+		if (this.name != "idSet1")
+			this.name = "idSet0";
+		
 		// which key was pressed?
 		var characterCode = event.charCode;
     	if (characterCode == undefined) {
@@ -130,29 +132,34 @@ $(document).ready(function(){
 		
 		// request new id if value was empty
 		if (this.value == '') {
-			idSet = 0;
+			this.name = "idSet0";
 		}
 		
+		var theTextbox = this;
+		
 		// request id from background.html if not already set
-		if (idSet == 0) {
+		if (this.name == "idSet0") {
 			chrome.extension.sendRequest({idRequest: "id"}, function(response) {
   				requestedID = response.theId;
-				alert("requestedID: " + requestedID);
-				idSet = 1;
-				this.id = requestedID;
-				alert("This id: " + this.id);
+				//alert("requestedID: " + requestedID);
+				//idSet = 1;
+				theTextbox.name = "idSet1";
+				theTextbox.id = requestedID;
+				//alert("This + id: " + this.name + ", " + this.id);
 			});
 		}
+		
+		//alert("Requested ID2: " + requestedID);
+		//alert("This + id: " + this.name + ", " + this.id);
+		
+		if (requestedID)
+			this.id = requestedID;
 		
 		// new ID: involves URL  = "newID" + id++ + document.URL;
 		/*if (this.value == '' || idSet == 0) { // assign new id if textbox is empty 
 			this.id = "newID" + id++ + document.URL;
 			idSet = 1;
 		}*/
-	
-		//if (requestedID) {
-			
-		//}
 	
 		// actual value:
 		var val = this.value + actualkey;
@@ -164,7 +171,7 @@ $(document).ready(function(){
 		// get the title
 		var title1 = document.title;
 		
-		alert("Sending id: " + this.id);
+		//alert("Sending id: " + this.id);
 		
 		// send the message
 		try {

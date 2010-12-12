@@ -37,9 +37,7 @@
  // ID REQUEST FROM LOCAL STORAGE //
  chrome.extension.onRequest.addListener(
   function(request, sender, sendResponse) {
-    console.log(sender.tab ?
-                "from a content script:" + sender.tab.url :
-                "from the extension");
+    //console.log(sender.tab ? "from a content script:" + sender.tab.url : "from the extension");
     if (request.idRequest == "id") {
 		// look up id from local storage
 		var storageId = getItem("id");
