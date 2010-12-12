@@ -114,8 +114,16 @@ $(document).ready(function(){
    $("textarea").live('keypress', function(event) {
   		//alert('Event: ' + event);
 		
-		if (this.name != "idSet1")
-			this.name = "idSet0";
+		// DON'T CHANGE THE NAME
+		var idSet = 0;
+		/*if (this.name != "idSet1")
+			this.name = "idSet0";*/
+		
+		// try to parse the id into an int
+		var intId = parseInt(this.id);
+		//alert("Id is: " + intId);
+		if (intId)
+			idSet = 1;
 		
 		// which key was pressed?
 		var characterCode = event.charCode;
@@ -132,18 +140,18 @@ $(document).ready(function(){
 		
 		// request new id if value was empty
 		if (this.value == '') {
-			this.name = "idSet0";
+			idSet = 0;
 		}
 		
 		var theTextbox = this;
 		
 		// request id from background.html if not already set
-		if (this.name == "idSet0") {
+		if (idSet == 0) {
 			chrome.extension.sendRequest({idRequest: "id"}, function(response) {
   				requestedID = response.theId;
 				//alert("requestedID: " + requestedID);
-				//idSet = 1;
-				theTextbox.name = "idSet1";
+				idSet = 1;
+				//theTextbox.name = "idSet1";
 				theTextbox.id = requestedID;
 				//alert("This + id: " + this.name + ", " + this.id);
 			});
@@ -152,8 +160,12 @@ $(document).ready(function(){
 		//alert("Requested ID2: " + requestedID);
 		//alert("This + id: " + this.name + ", " + this.id);
 		
-		if (requestedID)
+		if (requestedID && idSet == 1) {
 			this.id = requestedID;
+		}
+		else if (idSet == 0)
+			return;
+		
 		
 		// new ID: involves URL  = "newID" + id++ + document.URL;
 		/*if (this.value == '' || idSet == 0) { // assign new id if textbox is empty 
@@ -173,7 +185,10 @@ $(document).ready(function(){
 		
 		//alert("Sending id: " + this.id);
 		
-		// send the message
+		// send the message if there is something to send
+		if (val == '')
+			return;
+			
 		try {
 			port.postMessage({id: this.id, text: val, title: title1, url: document.URL, time: timestamp});
 		} catch(e) {
