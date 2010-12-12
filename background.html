@@ -9,6 +9,8 @@
 
   database.webdb.db = null;
   
+  // Listener - to listen for any messages sent from the extension.
+  // Messages are stored in the webdb
   try {
   chrome.extension.onConnect.addListener(function(port) {
    		// check port name - "comment"
@@ -27,14 +29,42 @@
 			// WEBDB STORAGE
 			database.webdb.addComment(msg);
   		});
-});
+	});
   } catch(e) {
       log("Error: " + e);
   }
 
-  
- ///////////// LOCAL STORAGE START /////////////////////////
-  function setItem(key, value) {
+ // ID REQUEST FROM LOCAL STORAGE //
+ chrome.extension.onRequest.addListener(
+  function(request, sender, sendResponse) {
+    console.log(sender.tab ?
+                "from a content script:" + sender.tab.url :
+                "from the extension");
+    if (request.idRequest == "id") {
+		// look up id from local storage
+		var storageId = getItem("id");
+		console.log("Storage id: " + storageId);
+		if (!storageId) { // no key "id" found - create one
+			setItem("id", 1);
+			storageId = 1;
+		}
+		else { // increment to the next id
+			var newStorage = parseInt(storageId) + 1;
+			setItem("id", newStorage); 
+		}
+		
+		console.log("Sending Storage id: " + storageId);
+		
+		// send the requested id
+      	sendResponse({theId: storageId});
+	}
+    else
+      sendResponse({}); // snub them.
+  });
+
+ 
+ ///////////// LOCAL STORAGE METHODS START /////////////////////////
+ function setItem(key, value) {
     try {
       log("Inside setItem:" + key + ":" + value);
       window.localStorage.removeItem(key);
@@ -99,6 +129,10 @@ database.webdb.onSuccess = function(tx, r) {
 
 // drop table
 database.webdb.dropTable = function() {
+
+	// reset id in local storage
+	setItem("id", 0);
+
   database.webdb.db.transaction(function(tx) {
     tx.executeSql('DROP TABLE comment');
 				  });
@@ -202,6 +236,7 @@ function deleteAll() {
 
 // initialization
 function initDB() {
+
 	database.webdb.open();
 	database.webdb.dropTable(); // just to delete the table
 	database.webdb.createTable();
