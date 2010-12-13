@@ -1,53 +1,6 @@
 <html>
   <head>
-    <style type="text/css">
-		html,
-		body {
-			width:300px;
-			height: 300px;
-		}
-		body {
-			margin:0;
-			padding:5px;
-		}
-		
-		/* The div for the title */
-		div#Title {
-			font: normal 14px Verdana;
-			
-			
-		}
-
-		/* Title link */
-		a:link#link {
-			text-decoration: none;
-			border-bottom: 1px dotted #ff5353;
-			/* font: normal 9px Verdana; */
-		}
-		
-		a:hover#link {
-			text-decoration: underline;
-			border-bottom: 1px dashed #ff5353;
-			/* font: normal 9px Verdana; */
-		}
-		
-		a:visited#link {
-			text-decoration: none;
-			color: red;
-			border-bottom: 1px dashed #ff5353;
-			/* font: normal 9px Verdana; */
-		}
-		
-		/* The div for the comment */
-		div#holder {
-			width: 90%;
-			height:100%;
-			min-height:100%;
-			background-color:white;
-			font-family: Arial;
-			font-size: 14px;
-		}
-    </style>
+  	<link rel="stylesheet" href="Style.css" />
 	
 	<!-- Javascript -->
     <script>
@@ -166,54 +119,29 @@
 	  
 	  	// set a little delay to ensure that the comment shows up
 		setTimeout("document.getElementById('link').href = lastURL", 100);
-		setTimeout("document.getElementById('Title').innerText = lastTitle", 100);
-		setTimeout("document.getElementById('lastcomment').innerText = lastComment", 100);
+		setTimeout("document.getElementById('Title2').innerText = lastTitle", 100);
+		setTimeout("document.getElementById('lastcomment2').innerText = lastComment", 100);
 	}
 
     </script>
   </head>
   <body onload='start()'>
     <div id='holder'>
-		<a href="" id='link'>				<!-- The Link -->
-			<div id='Title'></div> 			<!-- The Title -->
-		</a>
+		<div id='Title'>
+			Page:<br>
+			<a href="" id='link'>
+				<div id='Title2'>			<!-- The Title -->
+				</div>
+			</a>
+		</div> 							
 		<br>
-		<div id='lastcomment'></div>		<!--Last value will show up here-->
+		<div id='lastcomment'>
+			Comment:<br>
+			<div id='lastcomment2'>
+			</div>
+		</div>		<!--Last value will show up here-->
+		<div id='somepadding'></div>
 	</div>
-	<!-- <form name='form1'>
-      <table class="my_table" cellpadding="0" cellspacing="0" width=200px>
-        <tr>
-	  	  <td class="style1" colspan="2" align="center">Local Storage Sample</td>
-	  	</tr>
-	  	<tr class="odd">
-		  <td class="rborder" >Please Enter the name</td>
-		  <td class="ralign"><input type='text' size='6' name='fname'/></td>
-		</tr>
-		<tr class="even">
-		  <td class="rborder" colspan="2" align='center'>
-		    <input type='submit' value='store' OnClick='store()'/>
-		    <input type='submit' value='clear' OnClick='clearStorage()'/></td>
-	    </tr>
-		<tr class="odd"
-		  <td class="rborder"></td>
-		  <td class="ralign"></td>
-		</tr>
-		<tr class="even">
-		<td colspan="2"><a  href='javascript:void(0);' onclick='chrome.tabs.create({url: "comments.html"});'>Previous Values Stored</a></td>
-		</tr>
-		<tr class="odd"
-		  <td class="rborder">Last Value stored 1</td>
-		  <td class="ralign"><div id='val1'/></td>
-		</tr>
-		<tr class="even"
-		  <td class="rborder">Last Value stored 2</td>
-		  <td class="ralign"><div id='val2'/></td>
-		</tr>
-		<tr class="odd"
-	      <td class="rborder">Last Value stored 3</td>
-		  <td class="ralign"><div id='val3'/></td>
-		</tr>
-      </table>
-    </form>-->
+	
   </body>
 </html>
