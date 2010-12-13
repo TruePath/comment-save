@@ -1,84 +1,55 @@
 <html>
   <head>
-    <style>
+    <style type="text/css">
 		html,
-	body {
-	width:300px;
-	height: 200px;
-	}
-	body {
-	margin:0;
-	padding:5px;
-	}
-	div#lastcomment {
-	height:100%;
-	min-height:100%;
-	background-color:pink;
-	}
-	
-	
-	  	.my_table {
-	  	   margin:2px;
-	  	   font-family:Arial;
-	  	   font-size:11px;
-	  	   border: solid 1px #aaaaaa;
+		body {
+			width:300px;
+			height: 300px;
+		}
+		body {
+			margin:0;
+			padding:5px;
+		}
+		
+		/* The div for the title */
+		div#Title {
+			font: normal 14px Verdana;
+			
+			
 		}
 
-		.my_table tr.odd {
-		  background-color:#fff5cc;
+		/* Title link */
+		a:link#link {
+			text-decoration: none;
+			border-bottom: 1px dotted #ff5353;
+			/* font: normal 9px Verdana; */
 		}
-
-		.my_table tr.even {
-		  background-color:#ffffff;
+		
+		a:hover#link {
+			text-decoration: underline;
+			border-bottom: 1px dashed #ff5353;
+			/* font: normal 9px Verdana; */
 		}
-
-		.my_table td {
-		  padding: 3px;
-		  vertical-align:top;
+		
+		a:visited#link {
+			text-decoration: none;
+			color: red;
+			border-bottom: 1px dashed #ff5353;
+			/* font: normal 9px Verdana; */
 		}
-
-		.my_table td.rborder {
-		  border-right: solid 1px #aaaaaa;
+		
+		/* The div for the comment */
+		div#holder {
+			width: 90%;
+			height:100%;
+			min-height:100%;
+			background-color:white;
+			font-family: Arial;
+			font-size: 14px;
 		}
-
-		.my_table td.bborder {
-		  border-bottom: solid 1px #aaaaaa;
-		}
-
-		.my_table td.tborder {
-		  border-top: solid 1px #aaaaaa;
-		}
-
-		.my_table td.ralign {
-		  text-align: right;
-		}
-
-		.my_table td.calign {
-		  text-align: center;
-		}
-
-		.my_table tr.heading td {
-		  padding: 5px;
-		  font-weight: bold;
-		  text-align: center;
-		  background-color: #aff2fb;
-		}
-
-		.my_table td.odd {
-		  background-color: #aff2fb;
-		}
-
-		.my_table td.even {
-		  background-color: #ffffff;
-		}
-
-		.style1 {
-			font-size: 12px;
-			font-weight: bold;
-			color: #000000;
-			line-height: 1.5;
-	   }
     </style>
+	
+	<!-- Javascript -->
     <script>
 	// webdb stuff
 	var database = {};
@@ -86,108 +57,128 @@
 	database.webdb.db = null;
 	
 	// open the db
-database.webdb.open = function() {
-  var dbSize = 5 * 1024 * 1024; // 5MB
-  console.log("Size is " + dbSize);
-  try {
-  	database.webdb.db = openDatabase('Comments', '1.0', 'saves comments', dbSize);
-	console.log(database.webdb.db);
-  } catch (e) {
-    console.log(e);
-  }
-}	
+	database.webdb.open = function() {
+  		var dbSize = 5 * 1024 * 1024; // 5MB
+  		console.log("Size is " + dbSize);
+  		try {
+  			database.webdb.db = openDatabase('Comments', '1.0', 'saves comments', dbSize);
+			console.log(database.webdb.db);
+  		} catch (e) {
+    		console.log(e);
+  		}
+	}	
 
-	
 	// handling error
-database.webdb.onError = function(tx, e) {
-  console.log('Something unexpected happened: ' + e.message );
-}
+	database.webdb.onError = function(tx, e) {
+  		console.log('Something unexpected happened: ' + e.message );
+	}
 
-// on success
-database.webdb.onSuccess = function(tx, r) {
-  // re-render all the data
-  // loadTodoItems is defined in Step 4a
-  //database.webdb.getAllTodoItems(loadTodoItems);
-  log('DB opened successfully');
-}
+	// on success
+	database.webdb.onSuccess = function(tx, r) {
+  		console.log('DB opened successfully');
+	}
 
-// gets a comment
-database.webdb.getComment = function(renderFunc, id) {
-  //console.log('Id in getcomment = ' + id);
-  database.webdb.db.transaction(function(tx) {
-  	console.log('Id passed in: ' + id);
-    tx.executeSql('SELECT * FROM comment WHERE ID=?', [id.toString()], renderFunc, 
-        	database.webdb.onError);
-  });
-}
+	// gets a comment
+	database.webdb.getComment = function(renderFunc, id) {
+	  //console.log('Id in getcomment = ' + id);
+	  database.webdb.db.transaction(function(tx) {
+		console.log('Id passed in: ' + id);
+		tx.executeSql('SELECT * FROM comment WHERE ID=?', [id.toString()], renderFunc, 
+				database.webdb.onError);
+	  });
+	}
 
-// stores the last comment
-var lastComment;
+	// stores the last comment
+	var lastComment;		
+	var lastURL;
+	var lastTitle;
 
-// callback function for checking if a comment exists in the table
-function getCommentCB(tx, rs) {
-	console.log('\nRS Length = ' + rs.rows.length);
-  	
-  	for (var i=0; i < rs.rows.length; i++) {
-  		console.log('RS ' + i + ' = ' + rs.rows.item(i));
-  	}
-	if (rs.rows.length == 0) // none found
-		lastComment = -1;
-	else
-  		lastComment = rs.rows.item(0).comment;
+	// callback function for checking if a comment exists in the table
+	function getCommentCB(tx, rs) {
+		console.log('\nRS Length = ' + rs.rows.length);
 		
-	console.log('lastComment: ' + lastComment);
-  /*var todoItems = document.getElementById('todoItems');
-  todoItems.innerHTML = rowOutput;*/
-}
+		for (var i=0; i < rs.rows.length; i++) {
+			console.log('RS ' + i + ' = ' + rs.rows.item(i));
+		}
+		if (rs.rows.length == 0) {// none found
+			lastComment = "No comments saved!";
+			lastURL = "";
+			lastTitle = "";
+		}
+		else {
+			lastComment = rs.rows.item(0).comment;
+			lastURL = rs.rows.item(0).url;
+			lastTitle = rs.rows.item(0).title;
+		}
+			
+		// hack:
+		// if comment is only size 
+		console.log('lastComment: ' + lastComment);
+		console.log('lastTitle: ' + lastTitle);
+		console.log('lastURL: ' + lastURL);
+	}
+
+	// Variables for getting the key from localstorage	
+	var logging = false;
+	var key = "id";
+	var val1;	
 	
-      var logging = false;
-      var key = "id";
-	  var val1;	
-	
-	  // start
-	  function start() {
-	  	populate();
+	// start
+	function start() {
 		populate();
-	  }
+	}
 	
-	  // populates the popup
-      function populate() {
-        //log('entered populate()');
-		
+	// populates the popup
+    function populate() {
 		// open database
 		try {
-		database.webdb.open();
-		console.log('database open');
+			database.webdb.open();
+			//console.log('database open');
 		
-        val1 = getValue(key);
-		val1 = parseInt(val1) - 1;
-		console.log('Val1 = ' + val1);
-        updateValues(val1);
-        //log('leaving populate()');
+			// get the key from local storage
+        	val1 = getValue(key);
+			
+			// convert it to an int and get the previous one
+			val1 = parseInt(val1) - 1;
+			//console.log('Val1 = ' + val1);
+        	
+			// update the comment in the popup
+			updateValues(val1);
+        	//log('leaving populate()');
 		} catch (e) {
 	        console.log("error while doing something");
 	        console.log(e);
 	      }
       }
       
-      function getValue(key) {
-        return chrome.extension.getBackgroundPage().getItem(key);
-      }
+	// returns the item from local storage given the key	  
+	function getValue(key) {
+		return chrome.extension.getBackgroundPage().getItem(key);
+	}
 
-      function updateValues(value) {
-	  	console.log('Inside update values');
-	    // look up the database 
-	    database.webdb.getComment(getCommentCB, value);
-	  	setTimeout("console.log('After get comment')", 000);
+	// Shows the comment
+	function updateValues(value) {
+		//console.log('Inside update values');
+	    
+		// look up the database and get the comment
+		database.webdb.getComment(getCommentCB, value);
+		//setTimeout("console.log('After get comment')", 000);
 	  
-        setTimeout("document.getElementById('lastcomment').innerHTML = lastComment", 1000);
-      }
+	  	// set a little delay to ensure that the comment shows up
+		setTimeout("document.getElementById('link').href = lastURL", 100);
+		setTimeout("document.getElementById('Title').innerText = lastTitle", 100);
+		setTimeout("document.getElementById('lastcomment').innerText = lastComment", 100);
+	}
 
     </script>
   </head>
   <body onload='start()'>
-    <div id='lastcomment'><!--Last value will show up here-->
+    <div id='holder'>
+		<a href="" id='link'>				<!-- The Link -->
+			<div id='Title'></div> 			<!-- The Title -->
+		</a>
+		<br>
+		<div id='lastcomment'></div>		<!--Last value will show up here-->
 	</div>
 	<!-- <form name='form1'>
       <table class="my_table" cellpadding="0" cellspacing="0" width=200px>

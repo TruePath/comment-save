@@ -186,6 +186,8 @@ database.webdb.addComment = function(msg) {
 	database.webdb.getComment(getCommentCB, msg.id);
 	console.log("Row: " + row);
 	
+	console.log("\nLOGGING MESSAGE: " + msg.text);
+	
 	// if it exists, UPDATE otherwise INSERT
 	if (row == -1) {
 	    console.log("No row found - creating");
@@ -234,9 +236,12 @@ function deleteAll() {
 
 // initialization
 function initDB() {
-
+	// open the db
 	database.webdb.open();
+	
 	//database.webdb.dropTable(); // just to delete the table
+	
+	// create the table
 	database.webdb.createTable();
 	
 	// Deletion - just to remove everything

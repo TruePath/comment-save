@@ -111,7 +111,7 @@ var port = chrome.extension.connect({name: "comment"});
 // Instead of using onload, use JQuery:
 $(document).ready(function(){
    // attach function to all textareas
-   $("textarea").live('keypress', function(event) {
+   $("textarea").live('keyup', function(event) {
   		//alert('Event: ' + event);
 		
 		// DON'T CHANGE THE NAME
@@ -165,13 +165,6 @@ $(document).ready(function(){
 		}
 		else if (idSet == 0)
 			return;
-		
-		
-		// new ID: involves URL  = "newID" + id++ + document.URL;
-		/*if (this.value == '' || idSet == 0) { // assign new id if textbox is empty 
-			this.id = "newID" + id++ + document.URL;
-			idSet = 1;
-		}*/
 	
 		// actual value:
 		var val = this.value + actualkey;
