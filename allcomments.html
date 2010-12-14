@@ -3,6 +3,7 @@
   	<link rel="stylesheet" href="Style.css" />
 	
 	<!-- Javascript -->
+	<script type="text/javascript" src="jquery.js"></script>
     <script>
 	// webdb stuff
 	var database = {};
@@ -110,7 +111,7 @@
 		for (var i=0; i < rs.rows.length; i++) {
 			// render only if comment's length is greater than 1 [TODO]
 			if (rs.rows.item(i).comment.length > 1)
-				rowOutput += renderTodo(rs.rows.item(i));
+				rowOutput += renderTodoTable(rs.rows.item(i));
 		}
 	}
 	
@@ -124,7 +125,39 @@
 		list.appendChild(li);
   		//return '<li>' + row.ID + '[<a onclick="database.webdb.deleteTodo(' + row.ID + ');"'>X</a>]</li>';
 	}
-      
+    
+	// renders to the table	
+	function renderTodoTable(row) {
+		var table = document.getElementById('theTable');
+		
+		// the row
+		var tr = document.createElement("tr");
+		
+		// the elements
+		var td1 = document.createElement("td");
+		var td2 = document.createElement("td");
+		var td3 = document.createElement("td");
+		var td4 = document.createElement("td");
+		
+		// delete checkbox
+		td1.innerHTML = '<input type = "checkbox" name = "'+ row.ID + '"/>';
+		// page
+		td2.innerHTML = '<a href=' + row.url+ '>' + row.title + '</a>';
+		// comment
+		td3.innerHTML = row.comment;
+		// date/time
+		td4.innerHTML = row.timestamp;
+		
+		// append to the row
+		tr.appendChild(td1);
+		tr.appendChild(td2);
+		tr.appendChild(td3);
+		tr.appendChild(td4);
+		//console.log(tr);
+		
+		table.appendChild(tr);		
+	}
+	  
 	// returns the item from local storage given the key	  
 	function getValue(key) {
 		return chrome.extension.getBackgroundPage().getItem(key);
@@ -132,10 +165,12 @@
 	
 	// Redraws the list
 	function redraw() {
-		var list = document.getElementById('List'); 
+		/*var list = document.getElementById('List'); 
 		while (list.hasChildNodes()) {
     		list.removeChild(list.lastChild);
-		}		
+		}*/
+
+		$("#theTable tr:gt(0)").remove();
 		
 		// load all the items
 		database.webdb.getAllComments(loadComments);
@@ -192,8 +227,16 @@
 			<input type="button" value="Delete All Comments" onClick="deleteAll();">
 		</div>
 		
-		<ul id='List'>
-		</ul>
+		<!--<ul id='List'>
+		</ul> -->
+		<table id="theTable">
+			<tr align="center">
+				<td>Delete?</td>
+				<td>Page</td>
+				<td>The Comment</td>
+				<td>Date & Time</td>
+			</tr>
+		</table>
 	</div>
 	
   </body>
