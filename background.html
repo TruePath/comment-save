@@ -40,7 +40,7 @@
 				var storageId = getItem("id");
 				log("Storage id: " + storageId);
 				if (!storageId) { // no key "id" found - create one
-					setItem("id", 0);
+					setItem("id", 1);
 					storageId = 1;
 				}
 				else { // increment to the next id
@@ -125,7 +125,7 @@
 	// drop table
 	database.webdb.dropTable = function() {
 		// reset id in local storage
-		setItem("id", 0);
+		clearStrg();
 
 		database.webdb.db.transaction(function(tx) {
 			tx.executeSql('DROP TABLE comment');

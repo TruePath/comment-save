@@ -204,7 +204,7 @@
 	// deletes all the comments 
 	function deleteAll() {
 		// reset id in local storage
-		chrome.extension.getBackgroundPage().setItem("id", 0);
+		chrome.extension.getBackgroundPage().clearStrg();
 
 		// delete all the comments
 		database.webdb.db.transaction(function(tx) {
