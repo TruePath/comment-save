@@ -139,7 +139,7 @@ $(document).ready(function(){
 		var requestedID;
 		
 		// request new id if value was empty
-		if (this.value == '') {
+		if (this.value.length == 1) {
 			idSet = 0;
 		}
 		
