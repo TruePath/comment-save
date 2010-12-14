@@ -78,11 +78,11 @@
 	
 	// start
 	function start() {
-		populate();
+		populate(1);
 	}
 	
 	// populates the popup
-    function populate() {
+    function populate(diff) {
 		// open database
 		try {
 			database.webdb.open();
@@ -92,7 +92,7 @@
         	val1 = getValue(key);
 			
 			// convert it to an int and get the previous one
-			val1 = parseInt(val1) - 1;
+			val1 = parseInt(val1) - diff;
 			//console.log('Val1 = ' + val1);
         	
 			// update the comment in the popup
@@ -123,6 +123,11 @@
 		database.webdb.getComment(getCommentCB, value);
 		//setTimeout("console.log('After get comment')", 000);
 	  
+		// make sure proper comment shows up
+		if (lastComment == "No comments saved!" && key > 0) { // Something should be shown!
+			populate(2);
+		}
+	  
 	  	// set a little delay to ensure that the comment shows up
 		setTimeout("document.getElementById('link').href = \"javascript:window.open(lastURL)\"", 100);
 		setTimeout("document.getElementById('Title2').innerText = lastTitle", 100);
@@ -133,19 +138,24 @@
   </head>
   <body onload='start()'>
     <div id='holder'>
+		<a href='javascript:window.open("popup2.html");' id='alllink'>
+		<div id='allcomments'>				<!-- Link to all the comments -->
+			View all comments
+		</div></a>
+		<br>
 		<div id='Title'>
 			Page:<br>
 			<a href="" id='link'>
 				<div id='Title2'>			<!-- The Title -->
 				</div>
 			</a>
-		</div> 							
-		<br>
+		</div>
+		<div id='middlepadding'></div>		
 		<div id='lastcomment'>
 			Comment:<br>
 			<div id='lastcomment2'>
 			</div>
-		</div>		<!--Last value will show up here-->
+		</div>								<!--Last value will show up here-->
 		<div id='somepadding'></div>
 	</div>
 	
