@@ -40,7 +40,7 @@
 				var storageId = getItem("id");
 				log("Storage id: " + storageId);
 				if (!storageId) { // no key "id" found - create one
-					setItem("id", 1);
+					setItem("id", 0);
 					storageId = 1;
 				}
 				else { // increment to the next id
