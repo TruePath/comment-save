@@ -92,7 +92,11 @@
         	val1 = getValue(key);
 			
 			// convert it to an int and get the previous one
-			val1 = parseInt(val1) - diff;
+			var num = parseInt(val1);
+			if (num > 1)
+				val1 = num - diff;
+			else
+				val1 = num;
 			//console.log('Val1 = ' + val1);
         	
 			// update the comment in the popup
