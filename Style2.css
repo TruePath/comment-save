@@ -1,0 +1,130 @@
+		html,
+		body {
+			width: 80%;
+			align: center;
+			/*height: 300px;*/
+		}
+		body {
+			margin-top: 30px;
+			padding:5px;
+		}
+		
+		/* The overall page */
+		div#holder {
+		 	margin-left: 8%;
+		 	padding: 0;
+			width: 1000px;
+			height:100%;
+			min-height:100%;
+			min-width: 80%;
+			background-color:white;
+			text-align: center;
+			font-family: Arial;
+			font-size: 14px;
+		}
+		
+		/* View all comments */
+		div#allcomments {
+			width: 100%;
+			font: normal 10px Verdana;	
+			border: 1px dotted #ffe58a;
+			padding: 4px;
+			padding-right: 11px;
+			line-height: 20px;
+			background-color: #fff1c1;
+			text-align: center;
+			color: black;
+			text-decoration: none;
+		}
+		
+		
+		/* The buttons */
+		div#Buttons {
+			text-align: left;
+			padding: 15px;
+		}
+		
+		/* Button design */
+		input.delete {
+			font: normal 15px Arial;	
+			padding: 5px;
+			background-color: yellow;
+			border: 1px solid black;
+		}
+		
+		input.delete:hover {
+			background-color: green;
+			color: white;
+		}
+		
+		
+		div#allcomments:hover {
+			color:black;
+			background-color: #fff8dc;
+		}
+		
+		a:link#alllink {
+			text-decoration: none;
+		}
+		
+		
+		
+		/* The div for the title */
+		div#Title {
+			width: 100%;
+			font: normal 14px Verdana;	
+			border: 1px solid #d5d5d5;
+			padding: 10px;
+			line-height: 20px;
+			background-color: #f6fff7;
+			border-radius: 12px;
+		}
+
+		/* Title link */
+		a:link#link {
+			border-bottom: 6px dotted #ff5353;
+			text-decoration: none;
+			color: blue;
+			
+			/* font: normal 9px Verdana; */
+		}
+		
+		a:hover#link {
+			color: red;
+			border-bottom: 1px dashed #ff5353;
+			text-decoration: none;
+			/* font: normal 9px Verdana; */
+		}
+		
+		a:visited#link {
+			border-bottom: 1px dashed #ff5353;
+			text-decoration: none;
+			color: blue;
+			/* font: normal 9px Verdana; */
+		}
+		
+	
+		/* The div for the comment */
+		div#lastcomment {
+			width: 100%;
+			/*height: 100%;*/
+			background-color: #f1f1f1;
+			padding: 11px;
+			line-height: 21px;
+			/*border: 1px solid #eaffff;*/
+		}
+		
+		div#lastcomment2 {
+			font-style: italic;
+			font: 14px "Courier New", Courier, monospace;
+		}
+		
+		/* Padding */
+		div#somepadding {
+			height: 8px;
+		}
+		
+		/* Padding */
+		div#middlepadding {
+			height: 5px;
+		}
