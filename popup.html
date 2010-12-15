@@ -146,9 +146,9 @@ var Utils = {
 			lastTitle = "";
 		}
 		else {
-			lastComment = rs.rows.item(0).comment;
-			lastURL = rs.rows.item(0).url;
-			lastTitle = rs.rows.item(0).title;
+			lastComment = rs.rows.item(rs.rows.length-1).comment;
+			lastURL = rs.rows.item(rs.rows.length-1).url;
+			lastTitle = rs.rows.item(rs.rows.length-1).title;
 		}
 			
 		// hack:
@@ -174,27 +174,24 @@ var Utils = {
 		try {
 			database.webdb.open();
 			//console.log('database open');
-		
-			// get the key from local storage
-        	val1 = getValue(key);
-			
-			// convert it to an int and get the previous one
-			var num = parseInt(val1);
-			if (num > 1)
-				val1 = num - diff;
-			else
-				val1 = num;
-			//console.log('Val1 = ' + val1);
         	
 			// update the comment in the popup
-			updateValues(val1);
+			updateValues();
         	//log('leaving populate()');
 		} catch (e) {
 	        console.log("error while doing something");
 	        console.log(e);
 	      }
       }
-      
+
+	// SQL query to get all the comments
+	database.webdb.getAllComments = function(renderFunc) {
+		database.webdb.db.transaction(function(tx) {
+			tx.executeSql('SELECT * FROM comment', [], renderFunc, 
+						database.webdb.onError);
+  		});
+	}
+	
 	// returns the item from local storage given the key	  
 	function getValue(key) {
 		return chrome.extension.getBackgroundPage().getItem(key);
@@ -207,17 +204,13 @@ var Utils = {
 	}
 	
 	// Shows the comment
-	function updateValues(value) {
+	function updateValues() {
 		//console.log('Inside update values');
 	    
-		// look up the database and get the comment
-		database.webdb.getComment(getCommentCB, value);
+		// look up the database, get all the comments and choose the last one
+		database.webdb.getAllComments(getCommentCB);
+		
 		//setTimeout("console.log('After get comment')", 000);
-	  
-		// make sure proper comment shows up
-		if (lastComment == "No comments saved!" && key > 0) { // Something should be shown!
-			populate(2);
-		}
 	  
 	  	// set a little delay to ensure that the comment shows up
 		setTimeout("document.getElementById('link').href = \"javascript:window.open(lastURL)\"", 100);
