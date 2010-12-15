@@ -130,6 +130,9 @@ $(document).ready(function(){
     	if (characterCode == undefined) {
     		characterCode = event.keyCode;
     	}
+		
+		//alert('Value on ' + event.type + ': ' + ' KeyCode: ' + event.keyCode);
+		
 		var actualkey=String.fromCharCode(characterCode);
    		//alert("Key pressed is: " + actualkey);
 
@@ -138,8 +141,9 @@ $(document).ready(function(){
 		// GET ID from local storage
 		var requestedID;
 		
-		// request new id if value was empty
-		if (this.value.length == 1) {
+		// request new id if value was empty [and didnt use backspace or delete]
+		if (this.value.length == 1 && (event.keyCode != 8) && (event.keyCode != 46)) {
+			//alert("Getting new id");
 			idSet = 0;
 		}
 		
