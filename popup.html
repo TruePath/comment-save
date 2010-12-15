@@ -4,7 +4,94 @@
 	
 	<!-- Javascript -->
     <script>
-	// webdb stuff
+// For selecting text... [credit to http://4umi.com/web/javascript/select.php]
+var Utils = {
+  NOT_SUPPORTED : {},
+  DOM : {
+    getElementWithId : function() {
+      var func = function() { return Utils.NOT_SUPPORTED; }
+      if(document.getElementById) {
+        func = function(id) {
+          return document.getElementById(id);
+        }
+      } else if(document.all) {
+        func = function(id) {
+          return document.all[id];
+        }
+      }
+      return ( this.getElementWithId = func )();
+    }
+  },
+  Ranges : {
+    create : function() {
+      var func = function() { return Utils.NOT_SUPPORTED };
+      if(document.body && document.body.createTextRange) {
+        func = function() { return document.body.createTextRange(); }
+      } else if(document.createRange) {
+        func = function() { return document.createRange(); }
+      }
+      return (this.create = func)();
+    },
+    selectNode : function(node, originalRng) {
+      var func = function() { return Utils.NOT_SUPPORTED; };
+      var rng = this.create(), method = '';
+      if(rng.moveToElementText) { method = 'moveToElementText'; }
+      else if(rng.selectNode) { method = 'selectNode'; }
+      if(method)
+        func = function(node, rng) {
+          rng = rng || Utils.Ranges.create();
+		  //alert("Method: " + method);
+		  node = document.getElementById("lastcomment2");
+		  //alert("Node: " + node);
+		  
+          rng[method](node);
+          return rng;
+        }
+      return rng = null, (this.selectNode = func)(node, originalRng);
+    }
+  },
+  Selection : {
+    clear:function() {
+      var func = function() { return Utils.NOT_SUPPORTED };
+      if( typeof document.selection !== 'undefined' ) {
+        func = function() {
+          if(document.selection && document.selection.empty) {
+            return (Utils.Selection.clear = function() {
+              if(document.selection) { document.selection.empty(); }
+            })();
+          }
+        }
+      } else if(window.getSelection) {
+        var sel = window.getSelection();
+        if(sel.removeAllRanges) {
+          func = function() {
+            window.getSelection().removeAllRanges();
+          }
+        }
+        sel = null;
+      }
+      return (this.clear = func)();
+    },
+    add : function(originalRng) {
+      var func = function() { return Utils.NOT_SUPPORTED };
+      var rng = Utils.Ranges.create();
+      if(rng.select) {
+        func = function(rng) { rng.select(); }
+      } else if(window.getSelection) {
+        var sel = window.getSelection();
+        if(sel.addRange) {
+          func = function(rng) { window.getSelection().addRange(rng); }
+        }
+        sel = null;
+      }
+      return (this.add = func) ( originalRng );
+    }
+  }
+};
+// end of text selection code
+	
+	
+	// webdb stuff [credit to http://www.html5rocks.com/tutorials/webdatabase/todo/]
 	var database = {};
   	database.webdb = {};
 	database.webdb.db = null;
@@ -138,6 +225,12 @@
 		setTimeout("document.getElementById('lastcomment2').innerText = lastComment", 100);
 	}
 
+	// selects the comment text
+	function selectText() {
+		Utils.Selection.clear();
+        Utils.Selection.add( Utils.Ranges.selectNode(Utils.DOM.getElementWithId("lastcomment2") ) );
+	}
+	
     </script>
   </head>
   <body onload='start()'>
@@ -156,8 +249,16 @@
 		</div>
 		<div id='middlepadding'></div>	
 		<div id='middlepadding'></div>
-		<div id='notes'>Use [Ctrl + C] to copy the comment below after selecting</div>		
+			<div id='notes'>Use [Ctrl + C] to copy the comment below after selecting</div>		
 		<div id='middlepadding'></div>
+			<div id='selectbutton'><input type="button" id='select' value="Click to select comment" onClick="selectText()";>
+			<!--"'Utils.Selection.clear();' +
+        		'Utils.Selection.add(' +
+         		'Utils.Ranges.selectNode(' +
+            	'Utils.DOM.getElementWithId( \"lastcomment2\" )'+
+          	')' +
+        	');">-->
+			</div>
 		<div id='middlepadding'></div>		
 		<div id='lastcomment'>
 			Comment:<br>

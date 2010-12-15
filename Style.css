@@ -87,6 +87,16 @@
 			
 		}
 		
+		/* For selection button */
+		div#selectbutton {
+			text-align: center;
+		}
+		
+		/* The button */
+		input#select {
+			font-size: 10px;
+		}
+		
 		/* The div for the comment */
 		div#lastcomment {
 			width: 100%;
