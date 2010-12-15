@@ -128,7 +128,7 @@
     
 	// renders to the table	
 	function renderTodoTable(row) {
-		var table = document.getElementById('theTable');
+		var table = document.getElementById('tablebody');
 		
 		// the row
 		var tr = document.createElement("tr");
@@ -141,12 +141,16 @@
 		
 		// delete checkbox
 		td1.innerHTML = '<input type = "checkbox" name = "'+ row.ID + '"/>';
+		td1.width="10";
 		// page
 		td2.innerHTML = '<a href=' + row.url+ '>' + row.title + '</a>';
+		td1.width="100";
 		// comment
 		td3.innerHTML = row.comment;
+		td1.width="400";
 		// date/time
 		td4.innerHTML = row.timestamp;
+		td1.width="10";
 		
 		// append to the row
 		tr.appendChild(td1);
@@ -170,7 +174,7 @@
     		list.removeChild(list.lastChild);
 		}*/
 
-		$("#theTable tr:gt(0)").remove();
+		$("#tablebody tr").remove();
 		
 		// load all the items
 		database.webdb.getAllComments(loadComments);
@@ -203,6 +207,13 @@
 	
 	// deletes all the comments 
 	function deleteAll() {
+		// ask for confirmation
+		var answer = confirm ("Are you sure? Click OK to confirm or CANCEL")
+		if (answer){
+		}
+		else
+			return;
+	
 		// reset id in local storage
 		chrome.extension.getBackgroundPage().clearStrg();
 
@@ -220,7 +231,7 @@
   <body onload='start()'>
     <div id='holder'>
 		<div id='Title'>					<!-- Page Title -->
-		Comment Save - all comments
+		Comment Save Extension- Viewing all comments
 		</div>
 		<div id='Buttons'>					<!-- Delete buttons -->
 			<input type="button" class="delete" value="Delete Checked Comments" onClick="deleteChecked();">
@@ -228,14 +239,29 @@
 		</div>
 		
 		<!--<ul id='List'>
-		</ul> -->
+		</ul> 
 		<table id="theTable">
 			<tr align="center">
-				<td>Delete?</td>
-				<td>Page</td>
-				<td>The Comment</td>
-				<td>Date & Time</td>
+				<th width="10">Delete?</th>
+				<th width="300">Page</th>
+				<th width="600">The Comment</th>
+				<th width="80">Date & Time</th>
 			</tr>
+		</table> -->
+		
+		<!-- xhtml table -->
+		<table id="hor-minimalist-b" summary="Employee Pay Sheet">
+    		<thead>
+    			<tr>
+        		<th scope="col" width="10">Delete?</th>
+            	<th scope="col" width="300">Page</th>
+            	<th scope="col" width="600">The Comment</th>
+            	<th scope="col" width="100">Date & Time</th>
+        		</tr>
+    		</thead>
+    		<tbody id="tablebody">
+    		
+    		</tbody>
 		</table>
 	</div>
 	

@@ -39,7 +39,7 @@ function getTimestamp() {
     var time = hours + ":" + minutes;
 	
 	// return timestamp
-	return date + "," + time;
+	return date + ", " + time;
 }
   
 // id set or not?
