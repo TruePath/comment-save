@@ -43,14 +43,12 @@
 			text-decoration: none;
 		}
 		
-		
-		
 		/* The div for the title */
 		div#Title {
 			width: 100%;
-			font: normal 14px Verdana;	
+			font: normal 11px Verdana;	
 			border: 1px solid #d5d5d5;
-			padding: 10px;
+			padding: 9px;
 			line-height: 20px;
 			background-color: #f6fff7;
 			border-radius: 12px;
@@ -80,11 +78,16 @@
 		}
 		
 		/* Div for instructions */
+		div#instructions {
+			width: 100%;
+			border: 1px dotted #d8d900;
+			padding: 10px;
+		}
+		
 		div#notes {
 			text-align: center;
 			font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
 			font-size: 10px;
-			
 		}
 		
 		/* For selection button */
@@ -104,12 +107,12 @@
 			background-color: #f1f1f1;
 			padding: 11px;
 			line-height: 21px;
-			/*border: 1px solid #eaffff;*/
+			border: 1px solid #c6c6c6;
 		}
 		
 		div#lastcomment2 {
 			font-style: italic;
-			font: 14px "Courier New", Courier, monospace;
+			font: 15px "MS Sans Serif", Geneva, sans-serif;
 		}
 		
 		/* Padding */
