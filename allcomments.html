@@ -180,6 +180,23 @@
 		database.webdb.getAllComments(loadComments);
 	}
 	
+	// selects/unselects all checkboxes [for deletion]
+	function selectAll() {
+		// is it checked or not?
+		var isChecked = document.getElementById('selectAllCheckbox').checked;
+		
+		// get all checkboxes
+		// get all the checked items first
+		var inputs = document.getElementsByTagName('input');  
+  		var len = inputs.length;
+		console.log('Checkboxes: ' + len);
+   		var i;  
+   		for(i = 0; i < len; i++) {
+			if (inputs[i].type == 'checkbox')
+				inputs[i].checked = isChecked;
+		}
+	}
+	
 	// deletes the checked comments
 	function deleteChecked() {
 		// get all the checked items first
@@ -253,7 +270,7 @@
 		<table id="hor-minimalist-b" summary="Employee Pay Sheet">
     		<thead>
     			<tr>
-        		<th scope="col" width="10">Delete?</th>
+        		<th scope="col" width="10">Delete?<br><input type = "checkbox" id="selectAllCheckbox" onClick="selectAll();"/></th>
             	<th scope="col" width="300">Page</th>
             	<th scope="col" width="600">The Comment</th>
             	<th scope="col" width="100">Date & Time</th>
