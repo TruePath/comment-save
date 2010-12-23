@@ -23,6 +23,7 @@
   		// {id: newId, text: this.value, title: document.tile, url: document.URL, time: timestamp});
  	 	port.onMessage.addListener(function(msg) {
 	    	//log("Message: " + msg.id + "," + msg.text + "," + msg.title + "," + msg.url + "," + msg.time);
+			
 			// WEBDB STORAGE
 			database.webdb.addComment(msg);
   			});
@@ -46,10 +47,10 @@
 				else { // increment to the next id
 					var newStorage = parseInt(storageId) + 1;
 					setItem("id", newStorage);
-				}	
+				}
 		
 				log("Sending Storage id: " + storageId);
-		
+				
 				// send the requested id
       			sendResponse({theId: storageId});
 			}
@@ -181,6 +182,9 @@
 		log("Row: " + row);
 	
 		log("\nLOGGING MESSAGE: " + msg.text);
+	
+		// update current ID - for popup.html - supposed to show the last edited id
+		setItem("currentID", msg.id);
 	
 		// if it exists, UPDATE otherwise INSERT
 		if (row == -1) {

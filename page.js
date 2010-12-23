@@ -40,6 +40,10 @@ $(document).ready(function(){
 		
 		// DON'T CHANGE THE NAME
 		var idSet = 0;
+		
+		// test
+		//alert("ID: " + this.id);
+		
 		/*if (this.name != "idSet1")
 			this.name = "idSet0";*/
 		

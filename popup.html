@@ -159,7 +159,7 @@ var Utils = {
 	}
 
 	// Variables for getting the key from localstorage	
-	var logging = false;
+	var logging = true;
 	var key = "id";
 	var val1;	
 	
@@ -192,6 +192,18 @@ var Utils = {
   		});
 	}
 	
+	// the current id
+	var currentId;
+	
+	// SQL query to get the current comment
+	database.webdb.getComment = function(renderFunc, id) {
+		//log('Id in getcomment = ' + id);
+		database.webdb.db.transaction(function(tx) {
+			tx.executeSql('SELECT * FROM comment WHERE ID=?', [id], renderFunc, 
+																	database.webdb.onError);
+		});
+	}
+	
 	// returns the item from local storage given the key	  
 	function getValue(key) {
 		return chrome.extension.getBackgroundPage().getItem(key);
@@ -208,7 +220,10 @@ var Utils = {
 		//console.log('Inside update values');
 	    
 		// look up the database, get all the comments and choose the last one
-		database.webdb.getAllComments(getCommentCB);
+		//database.webdb.getAllComments(getCommentCB);
+		var id2 = getValue("currentID");
+		console.log("CURRENT ID IN POPUP: " + id2);
+		database.webdb.getComment(getCommentCB, id2);
 		
 		//setTimeout("console.log('After get comment')", 000);
 	  
