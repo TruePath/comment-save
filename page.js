@@ -47,11 +47,21 @@ $(document).ready(function(){
 		/*if (this.name != "idSet1")
 			this.name = "idSet0";*/
 		
+		// GOOGLE TRANSLATOR CHECK!
+		/*if (this.id) {
+			alert("ID IS: " + this.id);
+			//return;
+		}*/
+		
 		// try to parse the id into an int
 		var intId = parseInt(this.id);
-		//alert("Id is: " + intId);
-		if (intId)
+		if (isNaN(intId) && this.id) { // FOR SITES LIKE GOOGLE TRANSLATE 
+			return;
+		}
+		else {
+			//alert("IntID is: " + intId);
 			idSet = 1;
+		}
 		
 		// which key was pressed?
 		var characterCode = event.charCode;
