@@ -38,6 +38,7 @@ $(document).ready(function(){
 
 	// attach function to all textareas
 	$("textarea").live('keyup', function(event) {
+	    //alert("TABINDEX: " + this.tabIndex);
 		// iframe test - FOR DISQUS
 		var iTitle = document.title;
 		var theURL = document.URL; 
@@ -58,14 +59,18 @@ $(document).ready(function(){
 		var idSet = 0;
 		
 		// try to parse the id into an int
-		var intId = parseInt(this.id);
+		var intId = parseInt(this.tabIndex);
+		if (intId != 0) { // 0 is the default value for tab index on most sites
+			idSet = 1;
+		}
+		/*var intId = parseInt(this.id);
 		if (isNaN(intId) && this.id) { // FOR SITES LIKE GOOGLE TRANSLATE 
 			return;
 		}
 		else {
 			//alert("IntID is: " + intId);
 			idSet = 1;
-		}
+		}*/
 		
 		// which key was pressed?
 		var characterCode = event.charCode;
@@ -99,12 +104,12 @@ $(document).ready(function(){
 				//alert("requestedID: " + requestedID);
 				idSet = 1;
 				//theTextbox.name = "idSet1";
-				theTextbox.id = requestedID;
+				theTextbox.tabIndex = requestedID;
 			});
 		}
 		
 		if (requestedID && idSet == 1) {
-			this.id = requestedID;
+			this.tabIndex = requestedID;
 		}
 		else if (idSet == 0)
 			return;
@@ -132,7 +137,7 @@ $(document).ready(function(){
 		if (val == '')
 			return;
 		try {
-			port.postMessage({id: this.id, text: val, title: iTitle, url: theURL, time: timestamp});
+			port.postMessage({id: this.tabIndex, text: val, title: iTitle, url: theURL, time: timestamp});
 		} catch(e) {
 			alert("There was an error: " + e);
 		}
