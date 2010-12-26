@@ -222,6 +222,7 @@ var Utils = {
 		// look up the database, get all the comments and choose the last one
 		//database.webdb.getAllComments(getCommentCB);
 		var id2 = getValue("currentID");
+		id2 += ".0";
 		console.log("CURRENT ID IN POPUP: " + id2);
 		database.webdb.getComment(getCommentCB, id2);
 		

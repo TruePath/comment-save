@@ -1,126 +1,128 @@
-		html,
-		body {
-			width:350px;
-			/*height: 300px;*/
-		}
-		body {
-			margin:0;
-			padding:5px;
-		}
-		
-		/* The overall page */
-		div#holder {
-		 	margin: 0;
-		 	padding: 0;
-			width: 90%;
-			height:100%;
-			min-height:100%;
-			background-color:white;
-			font-family: Arial;
-			font-size: 14px;
-		}
-		
-		/* View all comments */
-		div#allcomments {
-			width: 100%;
-			font: normal 10px Verdana;	
-			border: 1px dotted #ffe58a;
-			padding: 4px;
-			padding-right: 11px;
-			line-height: 20px;
-			background-color: #fff1c1;
-			text-align: center;
-			color: black;
-			text-decoration: none;
-		}
-		
-		div#allcomments:hover {
-			color:black;
-			background-color: #fff8dc;
-		}
-		
-		a:link#alllink {
-			text-decoration: none;
-		}
-		
-		/* The div for the title */
-		div#Title {
-			width: 100%;
-			font: normal 11px Verdana;	
-			border: 1px solid #d5d5d5;
-			padding: 9px;
-			line-height: 20px;
-			background-color: #f6fff7;
-			border-radius: 12px;
-		}
+/* For popup.html */
 
-		/* Title link */
-		a:link#link {
-			border-bottom: 6px dotted #ff5353;
-			text-decoration: none;
-			color: blue;
-			
-			/* font: normal 9px Verdana; */
-		}
-		
-		a:hover#link {
-			color: red;
-			border-bottom: 1px dashed #ff5353;
-			text-decoration: none;
-			/* font: normal 9px Verdana; */
-		}
-		
-		a:visited#link {
-			border-bottom: 1px dashed #ff5353;
-			text-decoration: none;
-			color: blue;
-			/* font: normal 9px Verdana; */
-		}
-		
-		/* Div for instructions */
-		div#instructions {
-			width: 100%;
-			border: 1px dotted #d8d900;
-			padding: 10px;
-		}
-		
-		div#notes {
-			text-align: center;
-			font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
-			font-size: 10px;
-		}
-		
-		/* For selection button */
-		div#selectbutton {
-			text-align: center;
-		}
-		
-		/* The button */
-		input#select {
-			font-size: 10px;
-		}
-		
-		/* The div for the comment */
-		div#lastcomment {
-			width: 100%;
-			/*height: 100%;*/
-			background-color: #f1f1f1;
-			padding: 11px;
-			line-height: 21px;
-			border: 1px solid #c6c6c6;
-		}
-		
-		div#lastcomment2 {
-			font-style: italic;
-			font: 15px "MS Sans Serif", Geneva, sans-serif;
-		}
-		
-		/* Padding */
-		div#somepadding {
-			height: 8px;
-		}
-		
-		/* Padding */
-		div#middlepadding {
-			height: 5px;
-		}
+html,
+body {
+	width:350px;
+	/*height: 300px;*/
+}
+body {
+	margin:0;
+	padding:5px;
+}
+
+/* The overall page */
+div#holder {
+	margin: 0;
+	padding: 0;
+	width: 90%;
+	height:100%;
+	min-height:100%;
+	background-color:white;
+	font-family: Arial;
+	font-size: 14px;
+}
+
+/* View all comments */
+div#allcomments {
+	width: 100%;
+	font: normal 10px Verdana;	
+	border: 1px dotted #ffe58a;
+	padding: 4px;
+	padding-right: 11px;
+	line-height: 20px;
+	background-color: #fff1c1;
+	text-align: center;
+	color: black;
+	text-decoration: none;
+}
+
+div#allcomments:hover {
+	color:black;
+	background-color: #fff8dc;
+}
+
+a:link#alllink {
+	text-decoration: none;
+}
+
+/* The div for the title */
+div#Title {
+	width: 100%;
+	font: normal 11px Verdana;	
+	border: 1px solid #d5d5d5;
+	padding: 9px;
+	line-height: 20px;
+	background-color: #f6fff7;
+	border-radius: 12px;
+}
+
+/* Title link */
+a:link#link {
+	border-bottom: 6px dotted #ff5353;
+	text-decoration: none;
+	color: blue;
+	
+	/* font: normal 9px Verdana; */
+}
+
+a:hover#link {
+	color: red;
+	border-bottom: 1px dashed #ff5353;
+	text-decoration: none;
+	/* font: normal 9px Verdana; */
+}
+
+a:visited#link {
+	border-bottom: 1px dashed #ff5353;
+	text-decoration: none;
+	color: blue;
+	/* font: normal 9px Verdana; */
+}
+
+/* Div for instructions */
+div#instructions {
+	width: 100%;
+	border: 1px dotted #d8d900;
+	padding: 10px;
+}
+
+div#notes {
+	text-align: center;
+	font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+	font-size: 10px;
+}
+
+/* For selection button */
+div#selectbutton {
+	text-align: center;
+}
+
+/* The button */
+input#select {
+	font-size: 10px;
+}
+
+/* The div for the comment */
+div#lastcomment {
+	width: 100%;
+	/*height: 100%;*/
+	background-color: #f1f1f1;
+	padding: 11px;
+	line-height: 21px;
+	border: 1px solid #c6c6c6;
+}
+
+div#lastcomment2 {
+	font-style: italic;
+	font: 15px "MS Sans Serif", Geneva, sans-serif;
+}
+
+/* Padding */
+div#somepadding {
+	height: 8px;
+}
+
+/* Padding */
+div#middlepadding {
+	height: 5px;
+}

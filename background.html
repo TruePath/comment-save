@@ -1,7 +1,7 @@
 <html>
 <head>
 <script>
-	var logging  = false;
+	var logging  = true;
 
 	////////// HTML5 WEB DB BEGIN //////////////
 	var database = {};
@@ -24,8 +24,12 @@
  	 	port.onMessage.addListener(function(msg) {
 	    	//log("Message: " + msg.id + "," + msg.text + "," + msg.title + "," + msg.url + "," + msg.time);
 			
+			// check if tracking is allowed
+			var tracking = checkTracking();
+			
 			// WEBDB STORAGE
-			database.webdb.addComment(msg);
+			if (tracking == "1")
+				database.webdb.addComment(msg);
   			});
 		});
   	} catch(e) {
@@ -59,6 +63,20 @@
 		}
 	);
 
+	// Checks if tracking is enabled or not
+	function checkTracking() {
+		var check = getItem("tracking");
+		// if tracking is not enabled create the key
+		log("CHECK IS: " + check);
+		if (check == null) {
+			log("LOCAL STORAGE: got null!");
+			setItem("tracking", "1"); // 1 - enabled, 0 - disabled
+			return "1";
+		}
+		else {
+			return check;
+		}
+	}
  
  	///////////// LOCAL STORAGE METHODS START /////////////////////////
 	function setItem(key, value) {
