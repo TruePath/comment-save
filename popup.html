@@ -163,8 +163,34 @@ var Utils = {
 	var key = "id";
 	var val1;	
 	
+	
+	
+	// changes tracking variable based on checkbox
+	function changeTracking() {
+		// checkbox
+		var checkb = document.getElementById('trackingCheckbox');
+		if (checkb.checked) {			// enable tracking
+			setValue("tracking", "1");
+		}
+		else {
+			setValue("tracking", "0");
+		}
+	}
+	
 	// start
 	function start() {
+		// tracking checkbox
+		var trackingCheck = getValue("tracking");
+		// checkbox
+		var checkb = document.getElementById('trackingCheckbox');
+		if (trackingCheck == "1") { // tracking enabled
+			checkb.checked = true;
+		}
+		else {
+			checkb.checked = false;
+		}
+	
+		// the comment
 		populate(1);
 	}
 	
@@ -208,11 +234,10 @@ var Utils = {
 	function getValue(key) {
 		return chrome.extension.getBackgroundPage().getItem(key);
 	}
-
-	// Opens the page clicked in the link
-	function openPage(URL) {
-		console.log("Inside open page");
-		chrome.tabs.create({url: URL});
+	
+	// sets the item
+	function setValue(key, value) {
+		return chrome.extension.getBackgroundPage().setItem(key, value);
 	}
 	
 	// Shows the comment
@@ -244,6 +269,9 @@ var Utils = {
   </head>
   <body onload='start()'>
     <div id='holder'>
+		<div id='tracking'>					<!-- Tracking checkbox -->
+			Tracking:&nbsp;&nbsp;&nbsp;<input type = "checkbox" id="trackingCheckbox" onClick="changeTracking();"/>
+		</div>
 		<a href='javascript:window.open("allcomments.html");' id='alllink'>
 		<div id='allcomments'>				<!-- Link to all the comments -->
 			View all comments

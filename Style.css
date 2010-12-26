@@ -45,6 +45,21 @@ a:link#alllink {
 	text-decoration: none;
 }
 
+/* Change tracking */
+div#tracking {
+	width: 100%;
+	font: normal 10px Verdana;	
+	/*border: 1px dotted #ffe58a;*/
+	padding: 4px;
+	padding-right: 11px;
+	line-height: 20px;
+	background-color: white;
+	vertical-align: middle;
+	text-align: center;
+	color: black;
+	text-decoration: none;
+}
+
 /* The div for the title */
 div#Title {
 	width: 100%;
