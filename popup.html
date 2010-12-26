@@ -177,10 +177,10 @@ var Utils = {
 		// checkbox
 		var checkb = document.getElementById('trackingCheckbox');
 		if (checkb.checked) {			// enable tracking
-			setValue("tracking", "1");
+			setItem("tracking", "1");
 		}
 		else {
-			setValue("tracking", "0");
+			setItem("tracking", "0");
 		}
 	}
 	
@@ -188,6 +188,13 @@ var Utils = {
 	function start() {
 		// tracking checkbox
 		var trackingCheck = getValue("tracking");
+		
+		// make sure it's not null
+		if (trackingCheck == null) {
+			setItem("tracking", "1");
+			trackingCheck = "1";
+		}
+		
 		// checkbox
 		var checkb = document.getElementById('trackingCheckbox');
 		if (trackingCheck == "1") { // tracking enabled
@@ -243,7 +250,7 @@ var Utils = {
 	}
 	
 	// sets the item
-	function setValue(key, value) {
+	function setItem(key, value) {
 		return chrome.extension.getBackgroundPage().setItem(key, value);
 	}
 	
