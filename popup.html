@@ -4,6 +4,16 @@
 	
 	<!-- Javascript -->
     <script>
+	
+	var logging = true;
+	
+	// log function
+	function log(txt) {
+		if(logging) {
+			console.log(txt);
+		}
+	}
+	
 // For selecting text... [credit to http://4umi.com/web/javascript/select.php]
 var Utils = {
   NOT_SUPPORTED : {},
@@ -99,30 +109,30 @@ var Utils = {
 	// open the db
 	database.webdb.open = function() {
   		var dbSize = 5 * 1024 * 1024; // 5MB
-  		console.log("Size is " + dbSize);
+  		log("Size is " + dbSize);
   		try {
   			database.webdb.db = openDatabase('Comments', '1.0', 'saves comments', dbSize);
-			console.log(database.webdb.db);
+			log(database.webdb.db);
   		} catch (e) {
-    		console.log(e);
+    		log(e);
   		}
 	}	
 
 	// handling error
 	database.webdb.onError = function(tx, e) {
-  		console.log('Something unexpected happened: ' + e.message );
+  		log('Something unexpected happened: ' + e.message );
 	}
 
 	// on success
 	database.webdb.onSuccess = function(tx, r) {
-  		console.log('DB opened successfully');
+  		log('DB opened successfully');
 	}
 
 	// gets a comment
 	database.webdb.getComment = function(renderFunc, id) {
-	  //console.log('Id in getcomment = ' + id);
+	  //log('Id in getcomment = ' + id);
 	  database.webdb.db.transaction(function(tx) {
-		console.log('Id passed in: ' + id);
+		log('Id passed in: ' + id);
 		tx.executeSql('SELECT * FROM comment WHERE ID=?', [id.toString()], renderFunc, 
 				database.webdb.onError);
 	  });
@@ -135,10 +145,10 @@ var Utils = {
 
 	// callback function for checking if a comment exists in the table
 	function getCommentCB(tx, rs) {
-		console.log('\nRS Length = ' + rs.rows.length);
+		log('\nRS Length = ' + rs.rows.length);
 		
 		for (var i=0; i < rs.rows.length; i++) {
-			console.log('RS ' + i + ' = ' + rs.rows.item(i));
+			log('RS ' + i + ' = ' + rs.rows.item(i));
 		}
 		if (rs.rows.length == 0) {// none found
 			lastComment = "No comments saved!";
@@ -153,17 +163,14 @@ var Utils = {
 			
 		// hack:
 		// if comment is only size 
-		console.log('lastComment: ' + lastComment);
-		console.log('lastTitle: ' + lastTitle);
-		console.log('lastURL: ' + lastURL);
+		log('lastComment: ' + lastComment);
+		log('lastTitle: ' + lastTitle);
+		log('lastURL: ' + lastURL);
 	}
 
 	// Variables for getting the key from localstorage	
-	var logging = true;
 	var key = "id";
 	var val1;	
-	
-	
 	
 	// changes tracking variable based on checkbox
 	function changeTracking() {
@@ -199,14 +206,14 @@ var Utils = {
 		// open database
 		try {
 			database.webdb.open();
-			//console.log('database open');
+			//log('database open');
         	
 			// update the comment in the popup
 			updateValues();
         	//log('leaving populate()');
 		} catch (e) {
-	        console.log("error while doing something");
-	        console.log(e);
+	        log("error while doing something");
+	        log(e);
 	      }
       }
 
@@ -242,16 +249,16 @@ var Utils = {
 	
 	// Shows the comment
 	function updateValues() {
-		//console.log('Inside update values');
+		//log('Inside update values');
 	    
 		// look up the database, get all the comments and choose the last one
 		//database.webdb.getAllComments(getCommentCB);
 		var id2 = getValue("currentID");
 		id2 += ".0";
-		console.log("CURRENT ID IN POPUP: " + id2);
+		log("CURRENT ID IN POPUP: " + id2);
 		database.webdb.getComment(getCommentCB, id2);
 		
-		//setTimeout("console.log('After get comment')", 000);
+		//setTimeout("log('After get comment')", 000);
 	  
 	  	// set a little delay to ensure that the comment shows up
 		setTimeout("document.getElementById('link').href = \"javascript:window.open(lastURL)\"", 150);
