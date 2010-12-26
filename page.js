@@ -29,6 +29,30 @@ var id = 1;
 // Open the port to the extension
 var port = chrome.extension.connect({name: "comment"});
 
+// function tries to extract a reasonable title from the Disqus URL
+function getDisqusTitle(url) {
+	// first split it based on slashes
+	try {
+		var splits = url.split('/');
+		// before disqus.com
+		var website = splits[2].split('.')[0];
+		//alert("Splits[1] : " + splits[2]);
+		// the page thread
+		var thread = splits[4];
+		// replace all '_' with spaces
+		var t2 = thread.replace("_", " ");
+		//alert("First: " + splits[0] + "\n" + splits[1] + "\n" + splits[2] + "\n" + splits[3]);
+		
+		var title = website + " - " + t2;
+		return title;
+		
+	} catch (e) {
+		// do nothing for now
+		return "Disqus comment";
+	}
+
+}
+
 
 // response function for getting an id
 
@@ -46,8 +70,12 @@ $(document).ready(function(){
 		try {
 			if (window != window.top) {
 				if (location.hostname.indexOf('.disqus.com') != -1) { // disqus comment check
-					iTitle = "Disqus Comment";
+					iTitle = getDisqusTitle(theURL);//"Disqus Comment";
+				
 					//alert("theURL: " + theURL + "\nParent: " + parent );
+				}
+				else {
+					iTitle = "Other Comment";
 				}
 			}
 		}
@@ -63,14 +91,6 @@ $(document).ready(function(){
 		if (intId != 0) { // 0 is the default value for tab index on most sites
 			idSet = 1;
 		}
-		/*var intId = parseInt(this.id);
-		if (isNaN(intId) && this.id) { // FOR SITES LIKE GOOGLE TRANSLATE 
-			return;
-		}
-		else {
-			//alert("IntID is: " + intId);
-			idSet = 1;
-		}*/
 		
 		// which key was pressed?
 		var characterCode = event.charCode;
@@ -78,10 +98,7 @@ $(document).ready(function(){
     		characterCode = event.keyCode;
     	}
 		
-		//alert('Value on ' + event.type + ': ' + ' KeyCode: ' + event.keyCode);
-		
 		var actualkey=String.fromCharCode(characterCode);
-   		//alert("Key pressed is: " + actualkey);
 
     	// get the id - if it already exists good otherwise give it one 
 
