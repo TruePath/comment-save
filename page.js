@@ -1,23 +1,28 @@
-  
+
+// Month array
+var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 /* Returns the current time */
 function getTimestamp() {
 	// date
 	var currentTime = new Date();
-    var month = currentTime.getMonth() + 1;
+    var month = currentTime.getMonth();// + 1;
     var day = currentTime.getDate();
     var year = currentTime.getFullYear();
-    var date = month + "/" + day + "/" + year;
-
+    //var date = month + "/" + day + "/" + year;
+	var date = months[month] + " " + day + " " + year;
+	
 	// time
-	var hours = currentTime.getHours()
-    var minutes = currentTime.getMinutes()
+	var hours = currentTime.getHours();
+    var minutes = currentTime.getMinutes();
     if (minutes < 10){
-      minutes = "0" + minutes
+      minutes = "0" + minutes;
     }
     var time = hours + ":" + minutes;
 	
 	// return timestamp
-	return date + ", " + time;
+	date = date + '\n' + time;
+	return date;
+	//return date + "\n" + time;
 }
   
 // id set or not?

@@ -123,3 +123,11 @@ div#Title {
 	background-color: #d9d9d9;
 	border-radius: 12px;
 }
+
+.push {
+	height: 4em;
+}
+
+.footer {
+	margin-top: 100%;
+}

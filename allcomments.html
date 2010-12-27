@@ -146,10 +146,10 @@
 		td2.innerHTML = '<span style="word-break:break-all;"><a href=' + row.url+ '>' + row.title + '</a></span>';
 		td1.width="100";
 		// comment
-		td3.innerHTML = row.comment;
+		td3.innerText= row.comment;
 		td1.width="400";
 		// date/time
-		td4.innerHTML = row.timestamp;
+		td4.innerText = row.timestamp;
 		td1.width="10";
 		
 		// append to the row
@@ -254,33 +254,22 @@
 			<input type="button" class="delete" value="Delete Checked Comments" onClick="deleteChecked();">
 			<input type="button" class="delete" value="Delete All Comments" onClick="deleteAll();">
 		</div>
-		
-		<!--<ul id='List'>
-		</ul> 
-		<table id="theTable">
-			<tr align="center">
-				<th width="10">Delete?</th>
-				<th width="300">Page</th>
-				<th width="600">The Comment</th>
-				<th width="80">Date & Time</th>
-			</tr>
-		</table> -->
-		
 		<!-- xhtml table -->
 		<table id="hor-minimalist-b" summary="Table1">
     		<thead>
     			<tr>
         		<th scope="col" width="3%">Delete?<br><input type = "checkbox" id="selectAllCheckbox" onClick="selectAll();"/></th>
             	<th scope="col" width="22%">Page</th>
-            	<th scope="col" width="60%">The Comment</th>
-            	<th scope="col" width="15%">Date & Time</th>
+            	<th scope="col" width="55%">The Comment</th>
+            	<th scope="col" width="20%">Date & Time</th>
         		</tr>
     		</thead>
     		<tbody id="tablebody">
     		
     		</tbody>
 		</table>
+		<div class="push"></div>
 	</div>
-	
+	<div class="footer"></div>
   </body>
 </html>
