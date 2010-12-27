@@ -7,6 +7,7 @@
 	var database = {};
 	database.webdb = {};
 
+	// comments db
 	database.webdb.db = null;
   
 	// Listener - to listen for any messages sent from the extension.
@@ -131,6 +132,8 @@
 		}
 	}
 
+	
+	
 	// handling error
 	database.webdb.onError = function(tx, e) {
 		log('Something unexpected happened: ' + e.message );
@@ -160,6 +163,14 @@
 			});
 	}
 
+	// create filters table
+	database.webdb.createFiltersTable = function() {
+		database.webdb.db.transaction(function(tx) {
+			tx.executeSql('CREATE TABLE IF NOT EXISTS ' + 
+				'filters(ID INTEGER PRIMARY KEY ASC, name TEXT, website TEXT)', []);
+			});
+	}
+	
 	// GLOBAL Variable to check whether it is already in the table or not
 	var row = -1; // -1 = no row found
 
@@ -187,46 +198,65 @@
 			row = rs.rows.item(0);
 	}
 
+	// checks whether to filter out this url or not
+	function checkFilter(url) {
+		// split the url
+		var splits = url.split('/');
+		// the location + hostname
+		var website = splits[2];
+		
+		// check for each filter here
+		if (website.indexOf('facebook.com') != -1) {
+			log("Facebook blocked!");
+			return;
+		}
+	}
+	
 	// add data to table
 	// {id: newId, text: this.value, title: document.tile, url: document.URL, time: timestamp});
 	database.webdb.addComment = function(msg) {
+		// check for filters - for now just facebook
+		var filter = checkFilter(msg.url);
+		if (filter == true)
+			return;
+	
+		// SQL transaction
 		database.webdb.db.transaction(function(tx){
+			// Date object? TODO:
+			var addedOn = new Date();
 		
-		// Date object? TODO:
-		var addedOn = new Date();
-	
-		// check to see if the data already exists or not
-		database.webdb.getComment(getCommentCB, msg.id);
-		log("Row: " + row);
-	
-		log("\nLOGGING MESSAGE: " + msg.text);
-	
-		// update current ID - for popup.html - supposed to show the last edited id
-		setItem("currentID", msg.id);
-	
-		// if it exists, UPDATE otherwise INSERT
-		if (row == -1) {
-			log("No row found - creating");
-			tx.executeSql('INSERT INTO comment(ID, comment, title, url, timestamp) VALUES (?,?,?,?,?)', 
-			[msg.id, msg.text, msg.title, msg.url, msg.time],
-    	    database.webdb.onSuccess,
-			database.webdb.onError);
-		}
-		else {
-			log("Found Row! - updating");
+			// check to see if the data already exists or not
+			database.webdb.getComment(getCommentCB, msg.id);
+			log("Row: " + row);
 		
-			// Update comment
-			tx.executeSql('UPDATE comment SET comment=? WHERE ID=?', 
-			[msg.text, msg.id],
-			database.webdb.onSuccess,
-			database.webdb.onError);
+			log("\nLOGGING MESSAGE: " + msg.text);
 		
-			// Update timestamp
-			tx.executeSql('UPDATE comment SET timestamp=? WHERE ID=?', 
-    	    [msg.time, msg.id],
-    	    database.webdb.onSuccess,
-    	    database.webdb.onError);
-		}
+			// update current ID - for popup.html - supposed to show the last edited id
+			setItem("currentID", msg.id);
+		
+			// if it exists, UPDATE otherwise INSERT
+			if (row == -1) {
+				log("No row found - creating");
+				tx.executeSql('INSERT INTO comment(ID, comment, title, url, timestamp) VALUES (?,?,?,?,?)', 
+				[msg.id, msg.text, msg.title, msg.url, msg.time],
+				database.webdb.onSuccess,
+				database.webdb.onError);
+			}
+			else {
+				log("Found Row! - updating");
+			
+				// Update comment
+				tx.executeSql('UPDATE comment SET comment=? WHERE ID=?', 
+				[msg.text, msg.id],
+				database.webdb.onSuccess,
+				database.webdb.onError);
+			
+				// Update timestamp
+				tx.executeSql('UPDATE comment SET timestamp=? WHERE ID=?', 
+				[msg.time, msg.id],
+				database.webdb.onSuccess,
+				database.webdb.onError);
+			}
 		});
 	}	
 
@@ -251,12 +281,16 @@
 
 	// initialization
 	function initDB() {
-		// open the db
-		database.webdb.open();	
+		// open the comments db
+		database.webdb.open();
+		
 		//database.webdb.dropTable(); // just to delete the table
 		
-		// create the table
+		// create the comments table
 		database.webdb.createTable();
+	
+		// create the filters table
+		database.webdb.createFiltersTable();
 	
 		// Deletion - just to remove everything
 		//deleteAll();

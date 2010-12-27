@@ -37,11 +37,11 @@
 		//console.log('Id in getcomment = ' + id);
 		database.webdb.db.transaction(function(tx) {
 			console.log('Id passed in: ' + id);
-			tx.executeSql('SELECT * FROM comment WHERE ID=?', [id.toString()], renderFunc, 
+			tx.executeSql('SELECT * FROM filters WHERE ID=?', [id.toString()], renderFunc, 
 				database.webdb.onError);
 		});
-	}
-
+	}	
+	
 	// start
 	function start() {
 		addAllItems();
@@ -65,7 +65,7 @@
 	// SQL query to get all the comments
 	database.webdb.getAllComments = function(renderFunc) {
 		database.webdb.db.transaction(function(tx) {
-			tx.executeSql('SELECT * FROM comment', [], renderFunc, 
+			tx.executeSql('SELECT * FROM filters', [], renderFunc, 
 						database.webdb.onError);
   		});
 	}
@@ -74,9 +74,7 @@
 	function loadComments(tx, rs) {
 		var rowOutput = "";
 		for (var i=0; i < rs.rows.length; i++) {
-			// render only if comment's length is greater than 1 [TODO]
-			if (rs.rows.item(i).comment.length > 1)
-				rowOutput += renderTodoTable(rs.rows.item(i));
+			rowOutput += renderTodoTable(rs.rows.item(i));
 		}
 	}
     
@@ -91,26 +89,18 @@
 		var td1 = document.createElement("td");
 		var td2 = document.createElement("td");
 		var td3 = document.createElement("td");
-		var td4 = document.createElement("td");
 		
 		// delete checkbox
 		td1.innerHTML = '<input type = "checkbox" name = "'+ row.ID + '"/>';
-		td1.width="10";
-		// page
-		td2.innerHTML = '<span style="word-break:break-all;"><a href=' + row.url+ '>' + row.title + '</a></span>';
-		td1.width="100";
-		// comment
-		td3.innerText= row.comment;
-		td1.width="400";
-		// date/time
-		td4.innerText = row.timestamp;
-		td1.width="10";
-		
+		// Name
+		td2.innerHTML = '<span style="word-break:break-all;">' + row.name + '</span>';
+		// Filter - website
+		td3.innerText= row.website;
+
 		// append to the row
 		tr.appendChild(td1);
 		tr.appendChild(td2);
 		tr.appendChild(td3);
-		tr.appendChild(td4);
 		//console.log(tr);
 		
 		table.appendChild(tr);		
@@ -123,11 +113,6 @@
 	
 	// Redraws the list
 	function redraw() {
-		/*var list = document.getElementById('List'); 
-		while (list.hasChildNodes()) {
-    		list.removeChild(list.lastChild);
-		}*/
-
 		$("#tablebody tr").remove();
 		
 		// load all the items
@@ -171,7 +156,7 @@
 	// deletes one row from the table given the id
 	database.webdb.deleteComment = function(id) {
 		database.webdb.db.transaction(function(tx) {
-			tx.executeSql('DELETE FROM comment WHERE ID=?', [id],
+			tx.executeSql('DELETE FROM filters WHERE ID=?', [id],
 				database.webdb.onSuccess, database.webdb.onError);
 		});
 	}
@@ -190,7 +175,7 @@
 
 		// delete all the comments
 		database.webdb.db.transaction(function(tx) {
-			tx.executeSql('DELETE FROM comment');
+			tx.executeSql('DELETE FROM filters');
 		});
 		
 		// redraw
@@ -202,20 +187,19 @@
   <body onload='start()'>
     <div id='holder'>
 		<div id='Title'>					<!-- Page Title -->
-		Comment Save Extension- Viewing all comments
+		Comment Save Extension - Filters
 		</div>
 		<div id='Buttons'>					<!-- Delete buttons -->
-			<input type="button" class="delete" value="Delete Checked Comments" onClick="deleteChecked();">
-			<input type="button" class="delete" value="Delete All Comments" onClick="deleteAll();">
+			<input type="button" class="delete" value="Delete Checked Filters" onClick="deleteChecked();">
+			<input type="button" class="delete" value="Delete All Filters" onClick="deleteAll();">
 		</div>
 		<!-- xhtml table -->
 		<table id="hor-minimalist-b" summary="Table1">
     		<thead>
     			<tr>
         		<th scope="col" width="3%">Delete?<br><input type = "checkbox" id="selectAllCheckbox" onClick="selectAll();"/></th>
-            	<th scope="col" width="22%">Page</th>
-            	<th scope="col" width="55%">The Comment</th>
-            	<th scope="col" width="20%">Date & Time</th>
+            	<th scope="col" width="22%">Name</th>
+            	<th scope="col" width="70%">Website</th>
         		</tr>
     		</thead>
     		<tbody id="tablebody">
