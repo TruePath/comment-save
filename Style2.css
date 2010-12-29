@@ -1,8 +1,7 @@
 html,
 body {
-	width: 95%;
+	width: 90%;
 	align: center;
-	min-width: 80%;
 	/*height: 300px;*/
 }
 body {
@@ -14,14 +13,42 @@ body {
 div#holder {
 	margin-left: 5%;
 	padding: 0;
-	width: 100%;
+	width: 900px;
 	height:100%;
 	min-height:100%;
-	min-width: 800px;
+	min-width: 80%;
 	background-color:white;
 	text-align: center;
 	font-family: Arial;
 	font-size: 14px;
+}
+
+/* Filters */
+#Filters {
+	margin: 10px;
+	height: 200px;
+}
+
+/* Filters left */
+#AddFilters {
+	float: left;
+	text-align: left;
+	width: 50%;
+	height: 100%;
+}
+
+/* Filters right */
+#DeleteFilters {
+	float: right;
+	text-align: right;
+	width: 48%;
+	border-left: 1px solid grey;
+	height: 100%;
+}
+
+#fText {
+	text-align: center;
+	font-size: 18px;
 }
 
 /* Table */
@@ -99,7 +126,22 @@ div#Buttons {
 	padding: 15px;
 }
 
-/* Button design */
+/* Button design for filters */
+input.filterbuttons {
+	font: normal 12px Arial;	
+	padding: 5px;
+	background-color: navy;
+	border: 1px double black;
+	color: white;
+	border-radius: 6px;
+}
+
+input.filterbuttons:hover {
+	background-color: maroon;
+	color: white;
+}
+
+/* Button design for delete */
 input.delete {
 	font: normal 15px Arial;	
 	padding: 5px;
@@ -123,12 +165,4 @@ div#Title {
 	line-height: 20px;
 	background-color: #d9d9d9;
 	border-radius: 12px;
-}
-
-.push {
-	height: 4em;
-}
-
-.footer {
-	margin-top: 100%;
 }

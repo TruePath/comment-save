@@ -147,10 +147,10 @@
 	// drop table
 	database.webdb.dropTable = function() {
 		// reset id in local storage
-		clearStrg();
+		//clearStrg();
 
 		database.webdb.db.transaction(function(tx) {
-			tx.executeSql('DROP TABLE comment');
+			tx.executeSql('DROP TABLE filters');
 		});
 	}
 
@@ -167,7 +167,7 @@
 	database.webdb.createFiltersTable = function() {
 		database.webdb.db.transaction(function(tx) {
 			tx.executeSql('CREATE TABLE IF NOT EXISTS ' + 
-				'filters(ID INTEGER PRIMARY KEY ASC, name TEXT, website TEXT)', []);
+				'filters(ID INTEGER PRIMARY KEY ASC, website TEXT)', []);
 			});
 	}
 	
@@ -268,16 +268,6 @@
 		});
 	}	
 
-	// deletes all the rows from the "comment" table
-	// TODO: Read in the # of rows
-	function deleteAll() {
-		var i = 1;
-		var max = 416;
-		while (i != max) {
-			database.webdb.deleteComment(i);
-			i++;
-		}
-	}
 
 	// initialization
 	function initDB() {

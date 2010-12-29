@@ -1,10 +1,14 @@
 <html>
   <head>
-  	<link rel="stylesheet" href="Style2.css" />
+  	<link rel="stylesheet" href="Filter.css" />
 	
 	<!-- Javascript -->
 	<script type="text/javascript" src="jquery.js"></script>
     <script>
+	
+	// debugging
+	var logging = true;
+	
 	// webdb stuff
 	var database = {};
   	database.webdb = {};
@@ -13,73 +17,108 @@
 	// open the db
 	database.webdb.open = function() {
   		var dbSize = 5 * 1024 * 1024; // 5MB
-  		console.log("Size is " + dbSize);
+  		log("Size is " + dbSize);
   		try {
   			database.webdb.db = openDatabase('Comments', '1.0', 'saves comments', dbSize);
-			console.log(database.webdb.db);
+			log(database.webdb.db);
   		} catch (e) {
-    		console.log(e);
+    		log(e);
   		}
 	}	
 
 	// handling error
 	database.webdb.onError = function(tx, e) {
-  		console.log('Something unexpected happened: ' + e.message );
+  		log('Something unexpected happened: ' + e.message );
 	}
 
 	// on success
 	database.webdb.onSuccess = function(tx, r) {
-  		console.log('DB opened successfully');
+  		log('DB opened successfully');
 	}
 
 	// gets a comment
 	database.webdb.getComment = function(renderFunc, id) {
-		//console.log('Id in getcomment = ' + id);
+		//log('Id in getcomment = ' + id);
 		database.webdb.db.transaction(function(tx) {
-			console.log('Id passed in: ' + id);
+			log('Id passed in: ' + id);
 			tx.executeSql('SELECT * FROM filters WHERE ID=?', [id.toString()], renderFunc, 
 				database.webdb.onError);
 		});
 	}	
+	
+	// adds filters provided by the user
+	function addFilters() {
+		var textbox = document.getElementById("newFilters");//.value;
+		
+		// split it up
+		var text = textbox.value;
+		var lines = text.split("\n");
+		var length = lines.length;
+		
+		// add each filter individually
+		for (var i = 0; i < length; i++) {
+			if (lines[i] != "") {
+				log("Adding: " + lines[i]);
+				database.webdb.addFilter(lines[i]);
+			}
+		}
+	
+		// reset the textarea
+		textbox.value = "";
+		// redraw all the filters
+		redraw();
+	}
+	
+	// adds a filter to the table - gets a url from the textarea
+	database.webdb.addFilter = function(filter) {
+		// SQL transaction
+		database.webdb.db.transaction(function(tx){
+			tx.executeSql('INSERT INTO filters(website) VALUES (?)', 
+			[filter],
+			database.webdb.onSuccess,
+			database.webdb.onError);
+		});
+	}	
+	
 	
 	// start
 	function start() {
 		addAllItems();
 	}
 	
-	// adds all the comments on the display page
+	// adds all the filters on the display page
 	function addAllItems() {
 		try {
 			// open up the database
 			database.webdb.open();
 		
 			// load all the items
-			database.webdb.getAllComments(loadComments);
+			database.webdb.getAllFilters(loadFilters);
 			
 		} catch (e) {
-	        console.log("error while doing something");
-	        console.log(e);
+	        log("error while doing something");
+	        log(e);
 	      }
 	}
 	
-	// SQL query to get all the comments
-	database.webdb.getAllComments = function(renderFunc) {
+	// SQL query to get all the filters
+	database.webdb.getAllFilters = function(renderFunc) {
 		database.webdb.db.transaction(function(tx) {
 			tx.executeSql('SELECT * FROM filters', [], renderFunc, 
 						database.webdb.onError);
   		});
 	}
 	
-	// Loads all the comments
-	function loadComments(tx, rs) {
+	// Loads all the filters
+	function loadFilters(tx, rs) {
 		var rowOutput = "";
 		for (var i=0; i < rs.rows.length; i++) {
-			rowOutput += renderTodoTable(rs.rows.item(i));
+			rowOutput += renderFilterTable(rs.rows.item(i));
 		}
 	}
     
-	// renders to the table	
-	function renderTodoTable(row) {
+	// renders each filter to the table	
+	function renderFilterTable(row) {
 		var table = document.getElementById('tablebody');
 		
 		// the row
@@ -88,20 +127,16 @@
 		// the elements
 		var td1 = document.createElement("td");
 		var td2 = document.createElement("td");
-		var td3 = document.createElement("td");
 		
 		// delete checkbox
 		td1.innerHTML = '<input type = "checkbox" name = "'+ row.ID + '"/>';
-		// Name
-		td2.innerHTML = '<span style="word-break:break-all;">' + row.name + '</span>';
 		// Filter - website
-		td3.innerText= row.website;
+		td2.innerText= row.website;
 
 		// append to the row
 		tr.appendChild(td1);
 		tr.appendChild(td2);
-		tr.appendChild(td3);
-		//console.log(tr);
+		//log(tr);
 		
 		table.appendChild(tr);		
 	}
@@ -116,7 +151,7 @@
 		$("#tablebody tr").remove();
 		
 		// load all the items
-		database.webdb.getAllComments(loadComments);
+		database.webdb.getAllFilters(loadFilters);
 	}
 	
 	// selects/unselects all checkboxes [for deletion]
@@ -128,7 +163,7 @@
 		// get all the checked items first
 		var inputs = document.getElementsByTagName('input');  
   		var len = inputs.length;
-		console.log('Checkboxes: ' + len);
+		log('Checkboxes: ' + len);
    		var i;  
    		for(i = 0; i < len; i++) {
 			if (inputs[i].type == 'checkbox')
@@ -136,12 +171,12 @@
 		}
 	}
 	
-	// deletes the checked comments
+	// deletes the checked filters
 	function deleteChecked() {
 		// get all the checked items first
 		var inputs = document.getElementsByTagName('input');  
   		var len = inputs.length;
-		console.log('Checkboxes: ' + len);
+		log('Checkboxes: ' + len);
    		var i;  
    		for(i = 0; i < len; i++) {
 			if (inputs[i].type == 'checkbox')
@@ -161,7 +196,7 @@
 		});
 	}
 	
-	// deletes all the comments 
+	// deletes all the filters 
 	function deleteAll() {
 		// ask for confirmation
 		var answer = confirm ("Are you sure? Click OK to confirm or CANCEL")
@@ -170,10 +205,7 @@
 		else
 			return;
 	
-		// reset id in local storage
-		chrome.extension.getBackgroundPage().clearStrg();
-
-		// delete all the comments
+		// delete all the filters
 		database.webdb.db.transaction(function(tx) {
 			tx.executeSql('DELETE FROM filters');
 		});
@@ -182,6 +214,13 @@
 		redraw();
 	}
 
+	// log function
+	function log(txt) {
+		if(logging) {
+			console.log(txt);
+		}
+	}
+	
     </script>
   </head>
   <body onload='start()'>
@@ -189,6 +228,14 @@
 		<div id='Title'>					<!-- Page Title -->
 		Comment Save Extension - Filters
 		</div>
+		<div id="AddFilters">				<!-- Textarea + button for adding new filters -->
+			Filters allow you to disable tracking on certain websites.<br>
+			Enter filters into the box below (one per line). Enter a partial address. <br>For example, if you want to 
+			filter out Facebook enter "facebook.com" (without the quotes).<br><br>
+			<textarea cols="50" rows="5" id="newFilters"></textarea><br><br>
+			<input type="button" class="delete" value="Add New Filters" onClick="addFilters();">
+		</div>
+		<hr />
 		<div id='Buttons'>					<!-- Delete buttons -->
 			<input type="button" class="delete" value="Delete Checked Filters" onClick="deleteChecked();">
 			<input type="button" class="delete" value="Delete All Filters" onClick="deleteAll();">
@@ -198,8 +245,7 @@
     		<thead>
     			<tr>
         		<th scope="col" width="3%">Delete?<br><input type = "checkbox" id="selectAllCheckbox" onClick="selectAll();"/></th>
-            	<th scope="col" width="22%">Name</th>
-            	<th scope="col" width="70%">Website</th>
+            	<th scope="col" width="80%">Filter</th>
         		</tr>
     		</thead>
     		<tbody id="tablebody">
