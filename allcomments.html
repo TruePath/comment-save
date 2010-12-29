@@ -204,7 +204,12 @@
 		}
 	}
 	
-	////////////// FOR FILTERS ///////////////////////////
+	/****************************************************
+	
+			FOR FILTERS
+	
+	****************************************************/
+	
 	// adds filters provided by the user
 	function addFilters() {
 		var textbox = document.getElementById("newFilters");//.value;
@@ -345,9 +350,10 @@
   <body onload='start()'>
     <div id='holder'>
 		<div id='Title'>					<!-- Page Title -->
-		Comment Save Extension- Viewing all comments
+			View all filters and comments
 		</div>
 		<br><br>
+		<hr>
 		<div id='Filters'>					<!-- Filter information -->
 			<div id='AddFilters'>			<!-- Left-side: For adding filters -->
 				Filters allow you to disable tracking on websites.<br>
@@ -361,7 +367,7 @@
 				<b><div id="fText">Filters:</span></b></div>
 				<select size="10" id="viewFilters" multiple="true">
 				</select>
-				<br>
+				<br><br>
 				<input type="button" class="filterbuttons" value="Delete Selected Filters" onClick="deleteSelectedFilters();">&nbsp;&nbsp;
 				<input type="button" class="filterbuttons" value="Delete All Filters" onClick="deleteAllFilters();">
 			</div>

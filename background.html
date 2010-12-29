@@ -1,8 +1,9 @@
 <html>
 <head>
 <script>
+	// global variables
 	var logging  = true;
-
+	
 	////////// HTML5 WEB DB BEGIN //////////////
 	var database = {};
 	database.webdb = {};
@@ -10,27 +11,34 @@
 	// comments db
 	database.webdb.db = null;
   
+	// the msg passed in
+	var currentMsg = null;
+  
 	// Listener - to listen for any messages sent from the extension.
 	// Messages are stored in the webdb
 	try {
 		chrome.extension.onConnect.addListener(function(port) {
 		// check port name - "comment"
   		console.assert(port.name == "comment");
-		log("Tried to log");
-		log(port.name);
+		log("Port: "+ port.name);
   		
 		// get the message
   		// values:
   		// {id: newId, text: this.value, title: document.tile, url: document.URL, time: timestamp});
  	 	port.onMessage.addListener(function(msg) {
 	    	//log("Message: " + msg.id + "," + msg.text + "," + msg.title + "," + msg.url + "," + msg.time);
+			currentMsg = msg;
 			
 			// check if tracking is allowed
 			var tracking = checkTracking();
 			
 			// WEBDB STORAGE
-			if (tracking == "1")
-				database.webdb.addComment(msg);
+			if (tracking == "1") {
+				checkFilter(msg.url);
+				
+				setTimeout("database.webdb.addComment();", 200);
+				//setTimeout("filter = false;", 200);
+			}
   			});
 		});
   	} catch(e) {
@@ -131,8 +139,6 @@
 			log(e);
 		}
 	}
-
-	
 	
 	// handling error
 	database.webdb.onError = function(tx, e) {
@@ -198,66 +204,97 @@
 			row = rs.rows.item(0);
 	}
 
+	/******* FILTER FUNCTIONS **********/
+	var filterFound = false;
+	var website = "";
+	
+	// SQL query to get all the filters
+	database.webdb.getAllFilters = function(renderFunc) {
+		database.webdb.db.transaction(function(tx) {
+			tx.executeSql('SELECT * FROM filters', [], renderFunc, 
+						database.webdb.onError);
+  		});
+	}
+	
+	// Loads all the filters and checks if the website is to be filtered or not
+	function loadFilters(tx, rs) {
+		//alert("Website is: " + website);
+		var rowOutput = "";
+		var l = rs.rows.length;
+		for (var i=0; i < l; i++) {
+			var row = rs.rows.item(i);
+			log("Filter: " + row.website);
+			if (website.indexOf(row.website) != -1) { // filter found
+				log("Website blocked!");
+				filterFound = true;
+				return;
+			}
+		}
+		
+		// no filter
+		filterFound = false;
+		return;
+	}
+	
 	// checks whether to filter out this url or not
 	function checkFilter(url) {
 		// split the url
 		var splits = url.split('/');
 		// the location + hostname
-		var website = splits[2];
+		website = splits[2];
 		
-		// check for each filter here
-		if (website.indexOf('facebook.com') != -1) {
-			log("Facebook blocked!");
-			return;
-		}
+		// load all the filters
+		database.webdb.getAllFilters(loadFilters);
 	}
 	
 	// add data to table
 	// {id: newId, text: this.value, title: document.tile, url: document.URL, time: timestamp});
-	database.webdb.addComment = function(msg) {
+	database.webdb.addComment = function() {
 		// check for filters - for now just facebook
-		var filter = checkFilter(msg.url);
-		if (filter == true)
-			return;
-	
-		// SQL transaction
-		database.webdb.db.transaction(function(tx){
-			// Date object? TODO:
-			var addedOn = new Date();
+		// ERROR: Checking filter too quickly
+		//var filter = checkFilter(msg.url);
 		
-			// check to see if the data already exists or not
-			database.webdb.getComment(getCommentCB, msg.id);
-			log("Row: " + row);
+		//setTimeout("log(waiting)", 500);
 		
-			log("\nLOGGING MESSAGE: " + msg.text);
+		log("Filter IS: " + filterFound);
 		
-			// update current ID - for popup.html - supposed to show the last edited id
-			setItem("currentID", msg.id);
-		
-			// if it exists, UPDATE otherwise INSERT
-			if (row == -1) {
-				log("No row found - creating");
-				tx.executeSql('INSERT INTO comment(ID, comment, title, url, timestamp) VALUES (?,?,?,?,?)', 
-				[msg.id, msg.text, msg.title, msg.url, msg.time],
-				database.webdb.onSuccess,
-				database.webdb.onError);
-			}
-			else {
-				log("Found Row! - updating");
+		if (filterFound == false && currentMsg != null) {
+			// SQL transaction
+			database.webdb.db.transaction(function(tx){
+				// check to see if the data already exists or not
+				database.webdb.getComment(getCommentCB, currentMsg.id);
+				log("Row: " + row);
 			
-				// Update comment
-				tx.executeSql('UPDATE comment SET comment=? WHERE ID=?', 
-				[msg.text, msg.id],
-				database.webdb.onSuccess,
-				database.webdb.onError);
+				log("\nLOGGING MESSAGE: " + currentMsg.text);
 			
-				// Update timestamp
-				tx.executeSql('UPDATE comment SET timestamp=? WHERE ID=?', 
-				[msg.time, msg.id],
-				database.webdb.onSuccess,
-				database.webdb.onError);
-			}
-		});
+				// update current ID - for popup.html - supposed to show the last edited id
+				setItem("currentID", currentMsg.id);
+			
+				// if it exists, UPDATE otherwise INSERT
+				if (row == -1) {
+					log("No row found - creating");
+					tx.executeSql('INSERT INTO comment(ID, comment, title, url, timestamp) VALUES (?,?,?,?,?)', 
+					[currentMsg.id, currentMsg.text, currentMsg.title, currentMsg.url, currentMsg.time],
+					database.webdb.onSuccess,
+					database.webdb.onError);
+				}
+				else {
+					log("Found Row! - updating");
+				
+					// Update comment
+					tx.executeSql('UPDATE comment SET comment=? WHERE ID=?', 
+					[currentMsg.text, currentMsg.id],
+					database.webdb.onSuccess,
+					database.webdb.onError);
+				
+					// Update timestamp
+					tx.executeSql('UPDATE comment SET timestamp=? WHERE ID=?', 
+					[currentMsg.time, currentMsg.id],
+					database.webdb.onSuccess,
+					database.webdb.onError);
+				}
+			});
+		} // end of if filter == false
 	}	
 
 	// delete row from a table given the id
@@ -286,6 +323,12 @@
 		//deleteAll();
 	}
 
+	// pause function - used for synchronizing events
+	function pause(milliseconds) {
+		var dt = new Date();
+		while ((new Date()) - dt <= milliseconds) { /* Do nothing */ }
+	}
+	
 </script>
 </head>
 

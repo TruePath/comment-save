@@ -25,24 +25,27 @@ div#holder {
 
 /* Filters */
 #Filters {
-	margin: 10px;
-	height: 200px;
+	margin-top: 10px;
+	height: 220px;
 }
 
 /* Filters left */
 #AddFilters {
+	margin-top: 10px;
 	float: left;
 	text-align: left;
 	width: 50%;
 	height: 100%;
+	line-height: 20px;
 }
 
 /* Filters right */
 #DeleteFilters {
+	margin-top: 10px;
 	float: right;
 	text-align: right;
 	width: 48%;
-	border-left: 1px solid grey;
+	border-left: 1px solid #ccc;
 	height: 100%;
 }
 
