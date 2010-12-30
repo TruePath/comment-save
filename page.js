@@ -58,6 +58,22 @@ function getDisqusTitle(url) {
 
 }
 
+
+// gets the exact url for facebook posts
+function getFacebookUrl(element) {
+	// get the parent form first
+	var form = $(element).closest("form").get();
+	
+	// now get the 'span' class 'uiStreamSource'
+	var theSpan = $(form).find('span.uiStreamSource');
+	// now get the one 'a' object in the span
+	var link = $(theSpan).find('a');
+	
+	alert("FORM ID: " + form.id + "\nA:" + link.href);
+	//return "something";
+}
+
+
 // listen for requests from background.html for hostname (for adding to filters)
 chrome.extension.onRequest.addListener(
 	function(request, sender, sendResponse) {
@@ -141,13 +157,48 @@ $(document).ready(function(){
 	
 		// actual value:
 		var val = this.value + actualkey;
+		// send the message if there is something to send
+		if (val == '')
+			return;
 	
 		// get the timestamp
 		var timestamp = getTimestamp();
 		
-		// send the message if there is something to send
-		if (val == '')
-			return;
+		// check URL for Facebook - get exact URL
+		if (location.hostname.indexOf('facebook.com') != -1) { // on the main page of facebook
+			//try {
+				// get the parent form first
+				var form = $(this).closest("form").get();
+				alert("FORM: " + form + "\nForm name: " + form.name);
+				
+				// get first 'a'
+				var link = $(form).find('a')[0];
+				//alert("LINK2: " + link2 + ", " + link2.href);
+				
+				// get the title -- FIND CLOSEST DIV INSTEAD FIRST and then use span
+				var title = $(this).closest("span.UIStory_Message").get();
+				alert("TITLE: " + title.innerHTML);
+				
+				// get the proper span (based on whether you are on the main page or on a profile)
+				/*var theSpan, link;
+				try {
+					// now get the 'span' class 'uiStreamSource'
+					theSpan = $(form).find('span.uiStreamSource')[0]; // alternative: UIIntentionalStory_Time
+				} catch (e) { // on the profile page
+					theSpan = $(form).find('span.UIIntentionalStory_Time')[0]; // alternative: UIIntentionalStory_Time
+				}
+				
+				alert("theSpan: " + theSpan);
+				
+				// now get the one 'a' object in the span
+				var link = $(theSpan).children('a')[0];*/
+				
+				// set the proper link
+				if (link!= null)
+					theURL = link.href;
+			//} catch (e) {} // do nothing
+		}
+		
 		try {
 			port.postMessage({id: this.tabIndex, text: val, title: iTitle, url: theURL, time: timestamp});
 		} catch(e) {
