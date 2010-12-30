@@ -58,6 +58,16 @@ function getDisqusTitle(url) {
 
 }
 
+// listen for requests from background.html for hostname (for adding to filters)
+chrome.extension.onRequest.addListener(
+	function(request, sender, sendResponse) {
+		if (request.want == "hostname")
+			sendResponse({hostname: location.hostname});
+		else
+			sendResponse({}); // snub them.
+	});
+
+
 // response function for getting an id
 
 // Instead of using onload, use JQuery:

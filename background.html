@@ -208,6 +208,17 @@
 	var filterFound = false;
 	var website = "";
 	
+	// adds a filter to the table - gets a url from the textarea
+	database.webdb.addFilter = function(filter) {
+		// SQL transaction
+		database.webdb.db.transaction(function(tx){
+			tx.executeSql('INSERT INTO filters(website) VALUES (?)', 
+			[filter],
+			database.webdb.onSuccess,
+			database.webdb.onError);
+		});
+	}
+	
 	// SQL query to get all the filters
 	database.webdb.getAllFilters = function(renderFunc) {
 		database.webdb.db.transaction(function(tx) {
@@ -337,6 +348,10 @@
 	var trackingMenu = chrome.contextMenus.create(
 		{"title": "Tracking?", "type": "checkbox", "checked": getTracking(), "onclick":onClickTracking});
 	
+	// option for adding current website to filters
+	var filterMenu = chrome.contextMenus.create({"title": "Disable tracking on this website", "contexts":["page"],
+                                       "onclick": addFilterMenu});
+	
 	// gets the tracking variable
 	function getTracking() {
 		var f = checkTracking();
@@ -357,6 +372,23 @@
 	// updates tracking menu - [via popup.html]
 	function updateTrackingMenu(checked) {
 		chrome.contextMenus.update(trackingMenu, {"checked": checked});
+	}
+	
+	// adds the current website to filters
+	function addFilterMenu(info, tab) {
+		// request location
+		chrome.tabs.sendRequest(tab.id, {want: "hostname"}, function(response) {
+			hostname = response.hostname;
+			
+			// break it up according to '.'
+			var splits = hostname.split('.');
+			var website = splits[splits.length-2] + '.' + splits[splits.length-1];
+			alert("Website: " + website);
+			
+			// add filter to the database
+			database.webdb.addFilter(website);
+			
+		});
 	}
 	
 </script>
