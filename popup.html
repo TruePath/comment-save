@@ -178,9 +178,13 @@ var Utils = {
 		var checkb = document.getElementById('trackingCheckbox');
 		if (checkb.checked) {			// enable tracking
 			setItem("tracking", "1");
+			// update the context menu in background.html
+			chrome.extension.getBackgroundPage().updateTrackingMenu(true);
 		}
 		else {
 			setItem("tracking", "0");
+			// update the context menu in background.html
+			chrome.extension.getBackgroundPage().updateTrackingMenu(false);
 		}
 	}
 	

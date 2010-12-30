@@ -20,7 +20,7 @@
 		chrome.extension.onConnect.addListener(function(port) {
 		// check port name - "comment"
   		console.assert(port.name == "comment");
-		log("Port: "+ port.name);
+		//log("Port: "+ port.name);
   		
 		// get the message
   		// values:
@@ -327,6 +327,36 @@
 	function pause(milliseconds) {
 		var dt = new Date();
 		while ((new Date()) - dt <= milliseconds) { /* Do nothing */ }
+	}
+	
+	/**************************************************
+		CONTEXT MENUS 
+	**************************************************/
+	
+	// checkbox for enabling/disabling tracking
+	var trackingMenu = chrome.contextMenus.create(
+		{"title": "Tracking?", "type": "checkbox", "checked": getTracking(), "onclick":onClickTracking});
+	
+	// gets the tracking variable
+	function getTracking() {
+		var f = checkTracking();
+		if (f == "1")
+			return true;
+		else
+			return false;
+	}
+	
+	// function which changes tracking based on context menu check
+	function onClickTracking(info, tab) {
+		if (info.checked) 
+			setItem("tracking", "1");
+		else
+			setItem("tracking", "0");
+	}
+	
+	// updates tracking menu - [via popup.html]
+	function updateTrackingMenu(checked) {
+		chrome.contextMenus.update(trackingMenu, {"checked": checked});
 	}
 	
 </script>
