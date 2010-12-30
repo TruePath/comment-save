@@ -166,37 +166,27 @@ $(document).ready(function(){
 		
 		// check URL for Facebook - get exact URL
 		if (location.hostname.indexOf('facebook.com') != -1) { // on the main page of facebook
-			//try {
-				// get the parent form first
+			try { // get the parent form first
 				var form = $(this).closest("form").get();
-				alert("FORM: " + form + "\nForm name: " + form.name);
 				
 				// get first 'a'
 				var link = $(form).find('a')[0];
-				//alert("LINK2: " + link2 + ", " + link2.href);
 				
 				// get the title -- FIND CLOSEST DIV INSTEAD FIRST and then use span
-				var title = $(this).closest("span.UIStory_Message").get();
-				alert("TITLE: " + title.innerHTML);
-				
-				// get the proper span (based on whether you are on the main page or on a profile)
-				/*var theSpan, link;
 				try {
-					// now get the 'span' class 'uiStreamSource'
-					theSpan = $(form).find('span.uiStreamSource')[0]; // alternative: UIIntentionalStory_Time
-				} catch (e) { // on the profile page
-					theSpan = $(form).find('span.UIIntentionalStory_Time')[0]; // alternative: UIIntentionalStory_Time
+					// on main facebook page
+					var div = $(this).closest("div.UIImageBlock_Content.UIImageBlock_MED_Content").get();
+					
+					var span = $(div).find("span.messageBody")[0];
+					iTitle = iTitle + " - " + span.innerText;
+				} catch (e) {
+					// on profile page
 				}
-				
-				alert("theSpan: " + theSpan);
-				
-				// now get the one 'a' object in the span
-				var link = $(theSpan).children('a')[0];*/
 				
 				// set the proper link
 				if (link!= null)
 					theURL = link.href;
-			//} catch (e) {} // do nothing
+			} catch (e) {}
 		}
 		
 		try {
