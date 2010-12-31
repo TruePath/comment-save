@@ -181,12 +181,17 @@ $(document).ready(function(){
 					iTitle = iTitle + " - " + span.innerText;
 				} catch (e) {
 					// on profile page
+					//alert("Found something!");
+					var span = $(form).find('span.UIIntentionalStory_Time')[0];
+					link = $(span).children('a')[0];
 				}
 				
 				// set the proper link
 				if (link!= null)
 					theURL = link.href;
-			} catch (e) {}
+			} catch (e) {
+				alert("Found1");
+			}
 		}
 		
 		try {

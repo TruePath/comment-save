@@ -20,7 +20,7 @@
              "128":"128.png" },
   "browser_action": {
     "default_title": "Comment Save",
-    "default_icon": "16.png",
+    "default_icon": "128.png",
     "popup": "popup.html"
   }
 }
