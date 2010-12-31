@@ -190,7 +190,7 @@ $(document).ready(function(){
 				if (link!= null)
 					theURL = link.href;
 			} catch (e) {
-				alert("Found1");
+				//alert("Found1");
 			}
 		}
 		
