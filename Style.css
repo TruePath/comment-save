@@ -25,20 +25,21 @@ div#holder {
 /* View all comments */
 div#allcomments {
 	width: 100%;
-	font: normal 10px Verdana;	
-	border: 1px dotted #ffe58a;
+	font: normal 11px Verdana;	
+	border: 1px ridge #ffe58a;
 	padding: 4px;
 	padding-right: 11px;
 	line-height: 20px;
 	background-color: #fff1c1;
 	text-align: center;
-	color: black;
-	text-decoration: none;
+	color: blue;
+	text-decoration: underline;
 }
 
 div#allcomments:hover {
 	color:black;
 	background-color: #fff8dc;
+	text-decoration: none;
 }
 
 a:link#alllink {

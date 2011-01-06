@@ -83,7 +83,8 @@
 	// Loads all the comments
 	function loadComments(tx, rs) {
 		var rowOutput = "";
-		for (var i=0; i < rs.rows.length; i++) {
+		// last one at the top
+		for (var i=rs.rows.length - 1; i >= 0; i--) {
 			// render only if comment's length is greater than 1 [TODO]
 			if (rs.rows.item(i).comment.length > 1)
 				rowOutput += renderTodoTable(rs.rows.item(i));
@@ -350,7 +351,7 @@
   <body onload='start()'>
     <div id='holder'>
 		<div id='Title'>					<!-- Page Title -->
-			View all filters and comments
+			Comment Save - Viewing all filters and comments
 		</div>
 		<br><br>
 		<hr>
@@ -393,7 +394,7 @@
     		
     		</tbody>
 		</table>
-		<div class="push"></div>
+		<div class="push">Comment Save. Copyright Shayan Javed 2010-11<sup>&copy;</sup>. </div>
 	</div>
 	<div class="footer"></div>
   </body>

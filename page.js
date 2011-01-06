@@ -39,6 +39,7 @@ var port = chrome.extension.connect({name: "comment"});
 function getDisqusTitle(url) {
 	// first split it based on slashes
 	try {
+		
 		var splits = url.split('/');
 		// before disqus.com
 		var website = splits[2].split('.')[0];
@@ -104,6 +105,9 @@ $(document).ready(function(){
 				else {
 					iTitle = "Other Comment";
 				}
+				
+				// the url is the referrer
+				var theURL = document.referrer;
 			}
 		}
 		catch (e) {
