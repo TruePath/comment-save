@@ -25,22 +25,33 @@ div#holder {
 /* View all comments */
 div#allcomments {
 	width: 100%;
-	font: normal 11px Verdana;	
-	border: 1px ridge #ffe58a;
+	font: bold 12px Helvetica;	
+	letter-spacing: 1px;
+	border: 1px outset #a6a6a6;
+	/*border-radius: 6px;*/
 	padding: 4px;
-	padding-right: 11px;
+	padding-right: 15px;
 	line-height: 20px;
-	background-color: #fff1c1;
+	background-color: #00b5ee;/*#fff1c1;*/
 	text-align: center;
-	color: blue;
-	text-decoration: underline;
+	color: white;
+	text-shadow: 1px 1px 0px grey;
+}
+
+.view {
+	border-bottom: 1px dotted;
 }
 
 div#allcomments:hover {
+	background-color: #008bb7;
+	text-decoration: none;
+}
+
+/*div#allcomments:hover {
 	color:black;
 	background-color: #fff8dc;
 	text-decoration: none;
-}
+}*/
 
 a:link#alllink {
 	text-decoration: none;
