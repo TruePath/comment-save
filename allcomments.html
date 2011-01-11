@@ -211,6 +211,25 @@
 	
 	****************************************************/
 	
+	// toggles the filters div
+	function toggleFilters() {
+		// get the button
+		var button = document.getElementById("filterToggleButton");
+		var div = document.getElementById("Filters");
+		
+		// filters not visible, now make them visible
+		if (button.value == '+') {
+			button.value = '-';
+			// display the filters
+			div.style.display = 'block';
+		}
+		else {
+			button.value = '+';
+			// hide the filters
+			div.style.display = 'none';
+		}
+	}
+	
 	// adds filters provided by the user
 	function addFilters() {
 		var textbox = document.getElementById("newFilters");//.value;
@@ -354,8 +373,13 @@
 			Comment Save - Viewing all filters and comments
 		</div>
 		<br><br>
-		<hr>
+		<!-- Button to display/hide filters -->
+		<div id='filterToggle'>
+			<input type="button" class="toggle" value="+" id="filterToggleButton" onClick="toggleFilters();">&nbsp;Filters
+			<br>
+		</div>
 		<div id='Filters'>					<!-- Filter information -->
+		<hr>
 			<div id='AddFilters'>			<!-- Left-side: For adding filters -->
 				Filters allow you to disable tracking on websites.<br>
 				Enter filters into the box below (one per line). For example, if you don't want your comments on
@@ -375,7 +399,7 @@
 			<!-- <a href="filters.html">View/Edit Filters</a> -->
 		</div>
 		<br><br><br>
-		<hr>
+		
 		<div id='Buttons'>					<!-- Delete buttons -->
 			<input type="button" class="delete" value="Delete Checked Comments" onClick="deleteChecked();">
 			<input type="button" class="delete" value="Delete All Comments" onClick="deleteAll();">
