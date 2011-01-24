@@ -83,15 +83,22 @@
 	// Loads all the comments
 	function loadComments(tx, rs) {
 		var rowOutput = "";
+		
+		// for avoiding duplicates
+		var idAdded = [];
 		// last one at the top
 		for (var i=rs.rows.length - 1; i >= 0; i--) {
-			// render only if comment's length is greater than 1 [TODO]
-			if (rs.rows.item(i).comment.length > 1)
-				rowOutput += renderTodoTable(rs.rows.item(i));
+			// render only if comment's length is greater than 1 [TODO] and not duplicate
+			var row = rs.rows.item(i);
+			if (row.comment.length > 1 && idAdded.indexOf(row.ID) == -1) {
+				rowOutput += renderTodoTable(row);
+				// add to array
+				idAdded.push(row.ID);
+			}
 		}
 	}
-    
 	// renders to the table	
+    
 	function renderTodoTable(row) {
 		var table = document.getElementById('tablebody');
 		
