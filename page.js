@@ -135,10 +135,11 @@ $(document).ready(function(){
 
 		// GET ID from local storage
 		var requestedID;
-		
+		//alert('value is: ' + this.value);
 		// request new id if value was empty [and didnt use backspace or delete]
 		if (this.value.length == 1 && (event.keyCode != 8) && (event.keyCode != 46)) {
 			idSet = 0;
+			//alert('requesting new id');
 		}
 		
 		var theTextbox = this;
@@ -161,10 +162,15 @@ $(document).ready(function(){
 	
 		// actual value:
 		var val = this.value + actualkey;
-		// send the message if there is something to send
-		if (val == '')
+		// send the message if there is something to send - charcode check is for facebook 'enter' issue
+		if (val === '' || val === "" || val.length == 0 || val.charCodeAt(0) == 0) {// val.length == 1 
+		
+			//alert("Invalid val");
 			return;
-	
+		}
+		else {
+		//alert("Val2 is: " + val + ", charCode: " + val.charCodeAt(0));
+		
 		// get the timestamp
 		var timestamp = getTimestamp();
 		
@@ -202,6 +208,7 @@ $(document).ready(function(){
 			port.postMessage({id: this.tabIndex, text: val, title: iTitle, url: theURL, time: timestamp});
 		} catch(e) {
 			alert("There was an error: " + e);
+		}
 		}
 	});
    
