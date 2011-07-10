@@ -56,6 +56,9 @@
 				if (!storageId) { // no key "id" found - create one
 					setItem("id", 1);
 					storageId = 1;
+					
+					var newStorage = parseInt(storageId) + 1;
+					setItem("id", newStorage);
 				}
 				else { // increment to the next id
 					var newStorage = parseInt(storageId) + 1;
@@ -116,7 +119,10 @@
 
 	function clearStrg() {
 		log('about to clear local storage');
-		window.localStorage.clear();
+		// reset tracking, id
+		window.localStorage.setItem("id", 1);
+		window.localStorage.setItem("currentID", 1);
+		//window.localStorage.clear();
 		log('cleared');
 	}
 
