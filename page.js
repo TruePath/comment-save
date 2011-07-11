@@ -96,23 +96,19 @@ $(document).ready(function(){
   		var commentBox = document.querySelector('#comment');
   		
 		if (commentBox) {
+			//var iTitle = document.title;
 			$('#comment').live('keypress', function() {
-				//var characterCode = event.charCode;
-		
-				//var actualkey=String.fromCharCode(characterCode);
-  				//alert('Yay! ' + this.innerText + actualkey); // Works!
-				
 				// iframe test - FOR DISQUS
 				var iTitle = document.title;
 				var theURL = document.URL; 
-			
+				
 				try {
 					if (window != window.top) {
 						if (location.hostname.indexOf('.disqus.com') != -1) { // disqus comment check
 							iTitle = getDisqusTitle(theURL);//"Disqus Comment";
 						}
 						else {
-							iTitle = "Other Comment";
+							iTitle = "Disqus Comment";
 						}
 						
 						// the url is the referrer
@@ -122,14 +118,19 @@ $(document).ready(function(){
 				catch (e) {
 					alert("ERROR: " + e);
 				}
+				iTitle = 'Disqus - ' + iTitle;
+				theURL = document.referrer;
 			
 				// DON'T CHANGE THE NAME
 				var idSet = 0;
 				
-				// try to parse the id into an int
-				var intId = parseInt(this.tabIndex);
-				if (intId != 0) { // 0 is the default value for tab index on most sites
+				// try to get the data attribute
+				var data;
+				try {
+					data = this.getAttribute("data-cs");//this.dataset.cs;//data-cs;
 					idSet = 1;
+				} catch (error) {
+					idSet = 0;
 				}
 				
 				// which key was pressed?
@@ -144,12 +145,13 @@ $(document).ready(function(){
 
 				// GET ID from local storage
 				var requestedID;
-				//alert('value is: ' + this.value);
+
 				// request new id if value was empty [and didnt use backspace or delete]
 				if (this.innerText.length == 1 && (event.keyCode != 8) && (event.keyCode != 46)) {
 					idSet = 0;
-					//alert('requesting new id');
 				}
+				
+				var theTextbox = this;
 				
 				// request id from background.html if not already set
 				if (idSet == 0) {
@@ -157,35 +159,37 @@ $(document).ready(function(){
 						requestedID = response.theId;
 						idSet = 1;
 						
-						this.tabIndex = requestedID;
+						theTextbox.setAttribute("data-cs", requestedID);
 					});
 				}
 				
+				// a check to see if we have to go through or not
 				if (requestedID && idSet == 1) {
-					this.tabIndex = requestedID;
+					//this.tabIndex = requestedID;
+					this.setAttribute("data-cs", requestedID);
 				}
 				else if (idSet == 0)
 					return;
 			
 				// actual value:
-				var val = this.value + actualkey;
+				var val = this.innerText + actualkey;
+				
 				// send the message if there is something to send - charcode check is for facebook 'enter' issue
 				if (val === '' || val === "" || val.length == 0 || val.charCodeAt(0) == 0) {// val.length == 1 
-				
-					//alert("Invalid val");
 					return;
 				}
 				else {
-				//alert("Val2 is: " + val + ", charCode: " + val.charCodeAt(0));
-				
-				// get the timestamp
-				var timestamp = getTimestamp();
-				
-				try {
-					port.postMessage({id: this.tabIndex, text: val, title: iTitle, url: theURL, time: timestamp});
-				} catch(e) {
-					alert("There was an error: " + e);
-				}
+					/** Sending Message **/
+					
+					// get the timestamp
+					var timestamp = getTimestamp();
+					
+					// send the message
+					try {
+						port.postMessage({id: this.getAttribute("data-cs"), text: val, title: iTitle, url: theURL, time: timestamp});
+					} catch(e) {
+						//("There was an error: " + e);
+					}
 				}
 				
 				
@@ -194,45 +198,6 @@ $(document).ready(function(){
     		//commentBox.innerText = 'Google Chrome Injected!';
   		}
 	}
-		
-	//alert('Found formArea: ' + formArea);
-	// check if a disqus textarea exists
-	/*newDisqus = $("#comment");
-	formArea = $("#dsq-form-area");
-	if (formArea.length != 0) {
-		$('iframe').ready(function() {
-			// get all the iframes
-			iframes = document.getElementsByTagName('iframe');
-			alert('iLength: ' + iframes.length);
-			for (var i = 0; i < iframes.length; i++) { 
-				frame = iframes[i];
-				alert('IFrame: ' + frame.id); // Works!!
-				
-   				//newDisqus = i.contents().find('#comment');//$("#comment");
-				dom = frame.contentWindow.document
-				newDisqus = dom.getElementById('comment');
-				alert('NewDisqus: ' + newDisqus.length);
-				if (newDisqus.length != 0) {
-					alert('Found NewDisqus!');
-				}
-  			} 
-			
-			/*for(i in iframes) {
-				alert('Iframe: ' + i.contentDocument);
-				dom = i.contentDocument;
-				newDisqus = dom.getElementById('#comment');
-				//newDisqus = i.contents().find('#comment');//$("#comment");
-				alert('NewDisqus: ' + newDisqus.length);
-				if (newDisqus.length != 0) {
-					alert('Found NewDisqus!');
-				}
-			}*/
-		//});
-		/*alert('NewDisqus ' + formArea.length);//newDisqus.length);
-		newDisqus.change( function(event) {
-			alert('Comment: ' + this.innerHTML);
-		});
-	}*/
 
 	// attach function to all textareas
 	$("textarea").live('keyup', function(event) {
@@ -281,11 +246,10 @@ $(document).ready(function(){
 
 		// GET ID from local storage
 		var requestedID;
-		//alert('value is: ' + this.value);
+
 		// request new id if value was empty [and didnt use backspace or delete]
 		if (this.value.length == 1 && (event.keyCode != 8) && (event.keyCode != 46)) {
 			idSet = 0;
-			//alert('requesting new id');
 		}
 		
 		var theTextbox = this;
@@ -300,7 +264,7 @@ $(document).ready(function(){
 			});
 		}
 		
-		
+		// a check to see if we have to go through or not
 		if (requestedID && idSet == 1) {
 			//this.tabIndex = requestedID;
 			this.setAttribute("data-cs", requestedID);
@@ -310,54 +274,53 @@ $(document).ready(function(){
 	
 		// actual value:
 		var val = this.value + actualkey;
+		
 		// send the message if there is something to send - charcode check is for facebook 'enter' issue
 		if (val === '' || val === "" || val.length == 0 || val.charCodeAt(0) == 0) {// val.length == 1 
-		
-			//alert("Invalid val");
 			return;
 		}
 		else {
-		//alert("Val2 is: " + val + ", charCode: " + val.charCodeAt(0));
-		
-		// get the timestamp
-		var timestamp = getTimestamp();
-		
-		// check URL for Facebook - get exact URL
-		if (location.hostname.indexOf('facebook.com') != -1) { // on the main page of facebook
-			try { // get the parent form first
-				var form = $(this).closest("form").get();
-				
-				// get first 'a'
-				var link = $(form).find('a')[0];
-				
-				// get the title -- FIND CLOSEST DIV INSTEAD FIRST and then use span
-				try {
-					// on main facebook page
-					var div = $(this).closest("div.UIImageBlock_Content.UIImageBlock_MED_Content").get();
+			/** Sending Message **/
+			
+			// get the timestamp
+			var timestamp = getTimestamp();
+			
+			// check URL for Facebook - get exact URL
+			if (location.hostname.indexOf('facebook.com') != -1) { // on the main page of facebook
+				try { // get the parent form first
+					var form = $(this).closest("form").get();
 					
-					var span = $(div).find("span.messageBody")[0];
-					iTitle = iTitle + " - " + span.innerText;
+					// get first 'a'
+					var link = $(form).find('a')[0];
+					
+					// get the title -- FIND CLOSEST DIV INSTEAD FIRST and then use span
+					try {
+						// on main facebook page
+						var div = $(this).closest("div.UIImageBlock_Content.UIImageBlock_MED_Content").get();
+						
+						var span = $(div).find("span.messageBody")[0];
+						iTitle = iTitle + " - " + span.innerText;
+					} catch (e) {
+						// on profile page
+						//alert("Found something!");
+						var span = $(form).find('span.UIIntentionalStory_Time')[0];
+						link = $(span).children('a')[0];
+					}
+					
+					// set the proper link
+					if (link!= null)
+						theURL = link.href;
 				} catch (e) {
-					// on profile page
-					//alert("Found something!");
-					var span = $(form).find('span.UIIntentionalStory_Time')[0];
-					link = $(span).children('a')[0];
+					//alert("Found1");
 				}
-				
-				// set the proper link
-				if (link!= null)
-					theURL = link.href;
-			} catch (e) {
-				//alert("Found1");
 			}
-		}
-		
-		// send the message
-		try {
-			port.postMessage({id: this.getAttribute("data-cs"), text: val, title: iTitle, url: theURL, time: timestamp});
-		} catch(e) {
-			alert("There was an error: " + e);
-		}
+			
+			// send the message
+			try {
+				port.postMessage({id: this.getAttribute("data-cs"), text: val, title: iTitle, url: theURL, time: timestamp});
+			} catch(e) {
+				//("There was an error: " + e);
+			}
 		}
 	});
    
