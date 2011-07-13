@@ -35,6 +35,102 @@ var id = 1;
 // Open the port to the extension
 var port = chrome.extension.connect({name: "comment"});
 
+// callback function (for divs)
+function sendMessage(obj, event) {
+	// iframe test - FOR DISQUS
+	var iTitle = document.title;
+	var theURL = document.URL; 
+	
+	try {
+		if (window != window.top) {
+			if (location.hostname.indexOf('.disqus.com') != -1) { // disqus comment check
+				iTitle = getDisqusTitle(theURL);//"Disqus Comment";
+			}
+			else {
+				iTitle = "Disqus Comment";
+			}
+			
+			// the url is the referrer
+			var theURL = document.referrer;
+		}
+	}
+	catch (e) {
+		//alert("ERROR: " + e);
+	}
+	
+	theURL = document.referrer;
+
+	// DON'T CHANGE THE NAME
+	var idSet = 0;
+	
+	// try to get the data attribute
+	var data;
+	try {
+		data = obj.getAttribute("data-cs");//this.dataset.cs;//data-cs;
+		idSet = 1;
+	} catch (error) {
+		idSet = 0;
+	}
+	
+	// which key was pressed?
+	var characterCode = event.charCode;
+	if (characterCode == undefined) {
+		characterCode = event.keyCode;
+	}
+	
+	var actualkey=String.fromCharCode(characterCode);
+
+	// get the id - if it already exists good otherwise give it one 
+
+	// GET ID from local storage
+	var requestedID;
+
+	// request new id if value was empty [and didnt use backspace or delete]
+	if (obj.innerText.length == 1 && (event.keyCode != 8) && (event.keyCode != 46)) {
+		idSet = 0;
+	}
+	
+	// request id from background.html if not already set
+	if (idSet == 0) {
+		chrome.extension.sendRequest({idRequest: "id"}, function(response) {
+			requestedID = response.theId;
+			idSet = 1;
+			
+			obj.setAttribute("data-cs", requestedID);
+		});
+	}
+	
+	// a check to see if we have to go through or not
+	if (requestedID && idSet == 1) {
+		//this.tabIndex = requestedID;
+		obj.setAttribute("data-cs", requestedID);
+	}
+	else if (idSet == 0)
+		return;
+
+	// actual value:
+	var val = obj.innerText + actualkey;
+	
+	// send the message if there is something to send - charcode check is for facebook 'enter' issue
+	divID= obj.getAttribute("data-cs");
+	if (val === '' || val === "" || val.length == 0 || val.charCodeAt(0) == 0 || divID == null) {// val.length == 1 
+		return;
+	}
+	else {
+		/** Sending Message **/
+		
+		// get the timestamp
+		var timestamp = getTimestamp();
+		
+		// send the message
+		try {
+			port.postMessage({id: divID, text: val, title: iTitle, url: theURL, time: timestamp});
+		} catch(e) {
+			//("There was an error: " + e);
+		}
+	}
+}
+
 // function tries to extract a reasonable title from the Disqus URL
 function getDisqusTitle(url) {
 	// first split it based on slashes
@@ -59,22 +155,6 @@ function getDisqusTitle(url) {
 
 }
 
-
-// gets the exact url for facebook posts
-function getFacebookUrl(element) {
-	// get the parent form first
-	var form = $(element).closest("form").get();
-	
-	// now get the 'span' class 'uiStreamSource'
-	var theSpan = $(form).find('span.uiStreamSource');
-	// now get the one 'a' object in the span
-	var link = $(theSpan).find('a');
-	
-	alert("FORM ID: " + form.id + "\nA:" + link.href);
-	//return "something";
-}
-
-
 // listen for requests from background.html for hostname (for adding to filters)
 chrome.extension.onRequest.addListener(
 	function(request, sender, sendResponse) {
@@ -90,112 +170,26 @@ chrome.extension.onRequest.addListener(
 // Instead of using onload, use JQuery:
 $(document).ready(function(){
 	
+	// google+ check:
+	$(".v-J-n-m-Gc").live('keypress', function(event) {
+		//alert("detected a keypress");
+		// send the message
+		sendMessage(this, event);
+	});
+	
 	// check disqus
 	if (location.hostname.indexOf('.disqus.com') != -1) {
   		// Extract the textarea (there must be exactly one)
   		var commentBox = document.querySelector('#comment');
   		
 		if (commentBox) {
-			//var iTitle = document.title;
-			$('#comment').live('keypress', function() {
-				// iframe test - FOR DISQUS
-				var iTitle = document.title;
-				var theURL = document.URL; 
-				
-				try {
-					if (window != window.top) {
-						if (location.hostname.indexOf('.disqus.com') != -1) { // disqus comment check
-							iTitle = getDisqusTitle(theURL);//"Disqus Comment";
-						}
-						else {
-							iTitle = "Disqus Comment";
-						}
-						
-						// the url is the referrer
-						var theURL = document.referrer;
-					}
-				}
-				catch (e) {
-					alert("ERROR: " + e);
-				}
-				iTitle = 'Disqus - ' + iTitle;
-				theURL = document.referrer;
 			
-				// DON'T CHANGE THE NAME
-				var idSet = 0;
-				
-				// try to get the data attribute
-				var data;
-				try {
-					data = this.getAttribute("data-cs");//this.dataset.cs;//data-cs;
-					idSet = 1;
-				} catch (error) {
-					idSet = 0;
-				}
-				
-				// which key was pressed?
-				var characterCode = event.charCode;
-				if (characterCode == undefined) {
-					characterCode = event.keyCode;
-				}
-				
-				var actualkey=String.fromCharCode(characterCode);
-
-				// get the id - if it already exists good otherwise give it one 
-
-				// GET ID from local storage
-				var requestedID;
-
-				// request new id if value was empty [and didnt use backspace or delete]
-				if (this.innerText.length == 1 && (event.keyCode != 8) && (event.keyCode != 46)) {
-					idSet = 0;
-				}
-				
-				var theTextbox = this;
-				
-				// request id from background.html if not already set
-				if (idSet == 0) {
-					chrome.extension.sendRequest({idRequest: "id"}, function(response) {
-						requestedID = response.theId;
-						idSet = 1;
-						
-						theTextbox.setAttribute("data-cs", requestedID);
-					});
-				}
-				
-				// a check to see if we have to go through or not
-				if (requestedID && idSet == 1) {
-					//this.tabIndex = requestedID;
-					this.setAttribute("data-cs", requestedID);
-				}
-				else if (idSet == 0)
-					return;
-			
-				// actual value:
-				var val = this.innerText + actualkey;
-				
-				// send the message if there is something to send - charcode check is for facebook 'enter' issue
-				if (val === '' || val === "" || val.length == 0 || val.charCodeAt(0) == 0) {// val.length == 1 
-					return;
-				}
-				else {
-					/** Sending Message **/
-					
-					// get the timestamp
-					var timestamp = getTimestamp();
-					
-					// send the message
-					try {
-						port.postMessage({id: this.getAttribute("data-cs"), text: val, title: iTitle, url: theURL, time: timestamp});
-					} catch(e) {
-						//("There was an error: " + e);
-					}
-				}
-				
+			$('#comment').live('keypress', function(event) {
+				// call the function - pass in the event and the object
+				sendMessage(this, event);
 				
 			});
-    		// Inject some text!
-    		//commentBox.innerText = 'Google Chrome Injected!';
+    		
   		}
 	}
 
@@ -219,7 +213,7 @@ $(document).ready(function(){
 			}
 		}
 		catch (e) {
-			alert("ERROR: " + e);
+			//alert("ERROR: " + e);
 		}
 	
 		// DON'T CHANGE THE NAME
@@ -275,8 +269,9 @@ $(document).ready(function(){
 		// actual value:
 		var val = this.value + actualkey;
 		
+		data = this.getAttribute("data-cs");
 		// send the message if there is something to send - charcode check is for facebook 'enter' issue
-		if (val === '' || val === "" || val.length == 0 || val.charCodeAt(0) == 0) {// val.length == 1 
+		if (val === '' || val === "" || val.length == 0 || val.charCodeAt(0) == 0 || data == null) {// val.length == 1 
 			return;
 		}
 		else {
@@ -302,7 +297,6 @@ $(document).ready(function(){
 						iTitle = iTitle + " - " + span.innerText;
 					} catch (e) {
 						// on profile page
-						//alert("Found something!");
 						var span = $(form).find('span.UIIntentionalStory_Time')[0];
 						link = $(span).children('a')[0];
 					}
