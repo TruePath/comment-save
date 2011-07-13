@@ -1,3 +1,14 @@
+/*** 
+	page.js
+	The main Javascript file which runs on every page
+    Detects any textareas/divs to listen to and records the text.
+	Sends a message to the background process after getting the id.
+	 
+	Author: Shayan Javed (shayanj at gmail.com)
+	Version 0.4 
+	 
+	***/
+
 
 // Month array
 var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -57,8 +68,6 @@ function sendMessage(obj, event) {
 	catch (e) {
 		//alert("ERROR: " + e);
 	}
-	
-	theURL = document.referrer;
 
 	// DON'T CHANGE THE NAME
 	var idSet = 0;
@@ -172,7 +181,6 @@ $(document).ready(function(){
 	
 	// google+ check:
 	$(".v-J-n-m-Gc").live('keypress', function(event) {
-		//alert("detected a keypress");
 		// send the message
 		sendMessage(this, event);
 	});
