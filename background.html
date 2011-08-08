@@ -104,7 +104,7 @@
 	/**
 	 * TEMPORARY: Create variables for timedDeletion and deletionTime
 	 */
-	if (timedDeletionCheck == null) {
+	/*if (timedDeletionCheck == null) {
 		// make it true
 		setItem("deleteCheck", "true");
 	}
@@ -112,7 +112,8 @@
 		// 1 minute?
 		var t = 20 * 1000;
 		setItem("deletionTime", t);
-	//}
+	//} */
+	/** END TEMPORARY **/
 	
 	// Now start time loop - checks after every minute
 	// whether to delete all the comments or not
@@ -123,37 +124,42 @@
 	// The function to delete all the comments
 	function alertMsg()
 	{
-		// Has enough time passed?
-		// get current time
-		var currentTime = (new Date()).getTime();
-		
-		// future time = stored time variable + deletion time
-		var storedTime = parseInt(getItem("time"));
-		var deletionTime = parseInt(getItem("deletionTime"));
-		var futureTime = storedTime + deletionTime;
-		
-		log("Current Time: " + currentTime);
-		log("Future Time: " + futureTime);
-		
-		// delete if enough time has passed
-		if (currentTime >= futureTime) {
-			log("/// Window timeout ////");
+		if (getItem("deleteCheck") == "true") { // if it's false or does not exist it will do nothing
+			// Has enough time passed?
+			// get current time
+			var currentTime = (new Date()).getTime();
 			
-			// log a new time
-			var recordedTime = (new Date()).getTime();
-			setItem("time", recordedTime);
+			// future time = stored time variable + deletion time
+			var storedTime = parseInt(getItem("time"));
+			var deletionTime = parseInt(getItem("deletionTime"));
+			
+			// null check
+			if (storedTime != null && deletionTime != null) {
+				var futureTime = storedTime + deletionTime;
+				
+				log("Current Time: " + currentTime);
+				log("Future Time: " + futureTime);
+				
+				// delete if enough time has passed
+				if (currentTime >= futureTime) {
+					log("/// Window timeout ////");
+					
+					// log a new time
+					var recordedTime = (new Date()).getTime();
+					setItem("time", recordedTime);
+				}
+			}
 		}
 		
 		// loop
-		setTimeout("checkTimedDeletion();", 200);
+		//log("calling timed deletion again//////");
+		setTimeout("checkTimedDeletion();", 1000); // after every 1 second?
 	}
 	
 	// checks every minute to see whether to delete the comments or not
 	function checkTimedDeletion() {
-		if (getItem("deleteCheck") == "true") {
-			// check after every 60 seconds
-			var t=setTimeout("alertMsg()",20000);
-		}
+		// change to 60 seconds?
+		var t=setTimeout("alertMsg()",20000);
 	}
 	
 	
@@ -203,12 +209,12 @@
 
 	// Clears the local storage values
 	function clearStrg() {
-		log('about to clear local storage');
+		log('*** about to clear local storage for databases ***');
 		// reset tracking, id
 		window.localStorage.setItem("id", 1);
 		window.localStorage.setItem("currentID", 1);
 		//window.localStorage.clear();
-		log('cleared');
+		log('*** cleared ***');
 	}
 
 	// log function
@@ -403,7 +409,17 @@
 				database.webdb.onSuccess, database.webdb.onError);
 		});
 	}	
+	
+	// Delete all comments
+	function deleteAllComments() {
+		// reset id in local storage
+		clearStrg();
 
+		// delete all the comments
+		database.webdb.db.transaction(function(tx) {
+			tx.executeSql('DELETE FROM comment');
+		});
+	}
 
 	// initialization
 	function initDB() {
@@ -422,6 +438,9 @@
 		//deleteAll();
 	}
 
+	
+	
+	
 	// pause function - used for synchronizing events
 	function pause(milliseconds) {
 		var dt = new Date();

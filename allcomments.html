@@ -105,8 +105,8 @@
 			}
 		}
 	}
+	
 	// renders to the table	
-    
 	function renderTodoTable(row) {
 		var table = document.getElementById('tablebody');
 		
@@ -202,12 +202,12 @@
 			return;
 	
 		// reset id in local storage
-		chrome.extension.getBackgroundPage().clearStrg();
+		chrome.extension.getBackgroundPage().deleteAllComments();//clearStrg();
 
 		// delete all the comments
-		database.webdb.db.transaction(function(tx) {
-			tx.executeSql('DELETE FROM comment');
-		});
+		//database.webdb.db.transaction(function(tx) {
+			//tx.executeSql('DELETE FROM comment');
+		//});
 		
 		// redraw
 		redraw();
@@ -368,17 +368,92 @@
 		
 		// redraw filters
 		redrawFilters();
+	}
+	
+	/**************************************************
+	
+	       FOR TIMED DELETION
+		   
+	***************************************************/
+	
+	// Enables/disables timed deletion
+	function toggleTimedDeletion() {
+		// is it checked?
+		var check = document.getElementById("timedDeletionCheck").checked;
 		
-		/*var myselect=document.getElementById("sample")
-		for (var i=0; i<myselect.options.length; i++){
-			if (myselect.options[i].selected==true){
-				alert("Selected Option's index: "+i);
-				break;
-			}	
-		}*/
+		// enable/disable all the timed options
+		var children = document.getElementById("timedOptions").childNodes;
+		var l = children.length;
+		for(i = 0; i < l; i++) {
+			var child = children[i];
+			child.disabled = check;
+		}
+		
+		// enable the local storage id in the background
+		chrome.extension.getBackgroundPage().setItem("deleteCheck", check);
+	}
+	
+	// Only allows numbers in input fields
+	// Taken from: http://snippets.dzone.com/posts/show/5223
+	function numbersonly(e, decimal) {
+		var key;
+		var keychar;
+
+		if (window.event) {
+   			key = window.event.keyCode;
+		}
+		else if (e) {
+	   		key = e.which;
+		}
+		else {
+   			return true;
+		}
+		keychar = String.fromCharCode(key);
+
+		if ((key==null) || (key==0) || (key==8) ||  (key==9) || (key==13) || (key==27) ) {
+   			return true;
+		}
+		else if ((("0123456789").indexOf(keychar) > -1)) {
+   			return true;
+		}
+		else if (decimal && (keychar == ".")) { 
+			return true;
+		}
+		else
+			return false;
 	}
 	
 	
+	// Sets the time for the deletion. Checks for errors first
+	function setTimedDeletion() {
+		// get all the values (minutes, days, hours, months)
+		var minutes = parseInt(document.getElementById("minutes").value);
+		var hours = parseInt(document.getElementById("hours").value);
+		var days = parseInt(document.getElementById("days").value);
+		var months = parseInt(document.getElementById("months").value);
+		
+		// null check
+		if (isNaN(minutes))
+			minutes = 0;
+		if (isNaN(hours))
+			hours = 0;
+		if (isNaN(days))
+			days = 0;
+		if (isNaN(months))
+			months = 0;
+		
+		// calculate total time (ms). 1000 ms = 1 second
+		var totalTime = (( ( months * 30 + days) * 24 + hours) * 60 + minutes) * 60 * 1000;
+		
+		//alert("Minutes: " + minutes + ", Hours: " + hours + ", Days: " + days + ", Months: " + months);
+		if (totalTime == 0)
+			alert("Please set timed deletion to at least 1 minute");
+		else {
+			alert("All comments will be deleted in: \n" +
+			 	   minutes + " minute(s), " + hours + " hour(s), " + days + " day(s), " + months + " month(s), ");
+			
+		}
+	}
 	
     </script>
   </head>
@@ -388,6 +463,23 @@
 			Comment Save - Viewing all filters and comments
 		</div>
 		<br><br>
+		<!-- Timed deletion options --> <!-- TODO: Remember to populate these values on load -->
+		<div id='timedDeletion'>
+			<div id='timedHeader'>
+			Timed Deletion Options:
+			</div>
+			<!-- Checkbox for enabling/disabling timed options -->
+			Enable timed Deletion? <input type = "checkbox" id="timedDeletionCheck" onClick="toggleTimedDeletion();"/>
+			<!-- User-setting time -->
+			<div id='timedOptions'>
+				Minutes: <input type="text" id="minutes" maxlength="3" style="width:30px" onKeyPress="return numbersonly(event, false)">
+				Hours: <input type="text" id="hours" maxlength="3" style="width:30px" onKeyPress="return numbersonly(event, false)">
+				Days: <input type="text" id="days" maxlength="3" style="width:30px" onKeyPress="return numbersonly(event, false)">
+				Months: <input type="text" id="months" maxlength="3" style="width:30px" onKeyPress="return numbersonly(event, false)">
+				<br>
+				<input type="button" id="timeButton" value="Set Deletion Time" onClick="setTimedDeletion();">
+			</div>
+		</div>
 		<!-- Button to display/hide filters -->
 		<div id='filterToggle'>
 			<input type="button" class="toggle" value="+" id="filterToggleButton" onClick="toggleFilters();">&nbsp;Filters
