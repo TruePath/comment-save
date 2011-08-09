@@ -122,14 +122,22 @@
 			var currentTime = (new Date()).getTime();
 			
 			// future time = stored time variable + deletion time
-			var storedTime = parseInt(getItem("time"));
+			//var storedTime = parseInt(getItem("time"));
+			
+			// Stored time = the time of the comment
 			var deletionTime = parseInt(getItem("deletionTime"));
 			
+			// Go through all the comments
+			
+			
 			// null check
-			if (storedTime != null && deletionTime != null) {
-				var futureTime = storedTime + deletionTime;
+			if (deletionTime != null) {
+				//var futureTime = storedTime + deletionTime;
 				
-				log("Current Time: " + currentTime);
+				// load all the items
+				database.webdb.getAllComments(timedDeleteComments);
+				
+				/*log("Current Time: " + currentTime);
 				log("Future Time: " + futureTime);
 				
 				// delete if enough time has passed
@@ -140,7 +148,7 @@
 					// log a new time
 					var recordedTime = (new Date()).getTime();
 					setItem("time", recordedTime);
-				}
+				}*/
 			}
 		}
 		
@@ -149,12 +157,60 @@
 		setTimeout("checkTimedDeletion();", 1000); // after every 1 second?
 	}
 	
+	// tries to delete comments in the specified time
+	function timedDeleteComments(tx, rs) {
+		// get the current time
+		var currentTime = parseInt((new Date()).getTime());
+		// deletion time
+		var deletionTime = parseInt(getItem("deletionTime"));
+		
+		// for avoiding duplicates
+		var idAdded = [];
+		
+		// last one at the top
+		for (var i=rs.rows.length - 1; i >= 0; i--) {
+			// render only if comment's length is greater than 1 [TODO] and not duplicate
+			var row = rs.rows.item(i);
+			if (row.comment.length > 1 && idAdded.indexOf(row.ID) == -1) {
+				// parse the date
+				var commentTime = parseDate(row.timestamp);
+				//alert("Comment Time: " + commentTime + ", Current Time: " + currentTime);
+				
+				// delete if enough time has passed
+				if (currentTime >= (commentTime + deletionTime)) {
+					//alert("Time has passed");
+					database.webdb.deleteComment(row.ID);
+				}
+			
+				// add to array
+				idAdded.push(row.ID);
+			}
+		}
+	}
+	
+	
+	
 	// checks every minute to see whether to delete the comments or not
 	function checkTimedDeletion() {
 		// change to 60 seconds?
 		var t=setTimeout("alertMsg()",60000);
 	}
 	
+	// function which parses stored data and returns milliseconds
+	function parseDate(date) {
+		// split according to date first
+		var splits = date.split(" ");
+		var month = splits[0];
+		var day   = splits[1];
+		var yeartime  = splits[2].split('\n');
+		var year = yeartime[0];
+		var time  = yeartime[1] + ":00";
+		
+		var date  = new Date(month + " " + day + ", " + year + " " + time); // format: new Date("October 13, 1975 11:13:00")
+		
+		
+		return parseInt(date.getTime());
+	}
 	
 	// Checks if tracking is enabled or not
 	function checkTracking() {
@@ -270,6 +326,14 @@
 	// GLOBAL Variable to check whether it is already in the table or not
 	var row = -1; // -1 = no row found
 
+	// SQL query to get all the comments
+	database.webdb.getAllComments = function(renderFunc) {
+		database.webdb.db.transaction(function(tx) {
+			tx.executeSql('SELECT * FROM comment', [], renderFunc, 
+						database.webdb.onError);
+  		});
+	}
+	
 	// gets a comment (if it exists) according to id
 	// renderFunc = the function callback
 	database.webdb.getComment = function(renderFunc, id) {

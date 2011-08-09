@@ -29,6 +29,8 @@ div#holder {
 	font-size: 14px;
 }
 
+
+
 /* Timed Deletion objects */
 div#timedDeletion {
 	/*margin-left: 5%;*/
@@ -42,7 +44,7 @@ div#timedDeletion {
 }
 
 div#timeClass{
-	padding-left: 10px;
+	padding-left: 20px;
 }
 
 div#timedHeader {
@@ -59,7 +61,7 @@ i#timeItalics {
 }
 
 div#timeObjects {
-	margin-left: 4%;
+	padding-left: 30px;
 	margin-top: 1%;
 }
 
@@ -99,11 +101,12 @@ input.toggle {
 	/*position: relative;*/
 	/*margin-top: 40px;*/
 	width: 100%;
-	height: 220px;
+	height: 240px;
 	display: none;
 	float: left;
-	padding: 20px;
-	padding-bottom: 50px;
+	padding: 30px;
+	padding-top: 10px;
+	padding-bottom: 40px;
 	background: #edf3fb;
 }
 

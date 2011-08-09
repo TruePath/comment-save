@@ -511,12 +511,12 @@
 		// calculate total time (ms). 1000 ms = 1 second
 		var totalTime = (( ( months * 30 + days) * 24 + hours) * 60 + minutes) * 60 * 1000;
 		
-		//alert("Minutes: " + minutes + ", Hours: " + hours + ", Days: " + days + ", Months: " + months);
+		// Make sure it's not zero
 		if (totalTime == 0)
 			alert("Please set timed deletion to at least 1 minute");
 		else {
 			alert("All comments will be deleted in: \n" +
-			 	   minutes + " minute(s), " + hours + " hour(s), " + days + " day(s), " + months + " month(s), ");
+			 	   minutes + " minute(s), " + hours + " hour(s), " + days + " day(s) and " + months + " month(s).");
 			
 			// Now set the variables at the backend
 			// get the currentTime
@@ -533,13 +533,13 @@
   <body onload='start()'>
     <div id='holder'>
 		<div id='Title'>					<!-- Page Title -->
-			Comment Save - Viewing all filters and comments
+			Comment Save - Options, Filters and Comments
 		</div>
 		<br><br>
 		<!-- Timed deletion options --> <!-- TODO: Remember to populate these values on load -->
 		<div id='timedDeletion'>
 			<div id='timedHeader'>
-			Timed Deletion Options <i id="timeItalics">(<b>NOTE:</b> This deletes ALL of your comments after the time you set)</i>:
+			Timed Deletion Options <i id="timeItalics">(<b>NOTE:</b> This deletes ALL of your comments older than the time you set)</i>:
 			</div>
 			<!-- Checkbox for enabling/disabling timed options -->
 			
@@ -569,7 +569,7 @@
 				Filters allow you to disable tracking on websites.<br>
 				Enter filters into the box below (one per line). For example, if you don't want your comments on
 				Facebook tracked enter "facebook.com" (without the quotes).<br><br>
-				<textarea cols="50" rows="6" id="newFilters"></textarea><br><br>
+				<textarea cols="40" rows="6" id="newFilters"></textarea><br><br>
 				<input type="button" class="filterbuttons" value="Add New Filters" onClick="addFilters();">
 			</div>
 			
