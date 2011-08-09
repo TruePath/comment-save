@@ -29,11 +29,56 @@ div#holder {
 	font-size: 14px;
 }
 
+/* Timed Deletion objects */
+div#timedDeletion {
+	/*margin-left: 5%;*/
+	height: 15%;
+	text-align: left;
+	/*padding: 10px;*/
+	padding-bottom: 60px;
+	line-height: 35px;
+	background: #edf3fb;
+	border-radius: 6px;
+}
+
+div#timeClass{
+	padding-left: 10px;
+}
+
+div#timedHeader {
+	background: #b0e0e6;
+	padding-left: 8px;
+	font-size: 16px;
+	border-top-left-radius: 6px;
+	border-top-right-radius: 6px;
+	text-shadow: #E8E8E8 2px 2px 0;
+}
+
+i#timeItalics {
+	font-size: 15px;
+}
+
+div#timeObjects {
+	margin-left: 4%;
+	margin-top: 1%;
+}
+
+
+
+/* Filters */
 div#filterToggle {
-	font: bold 15px Verdana;
-	color: blue;
+	font: 15px;
+	background: #b0e0e6;
 	float: left;
 	padding-bottom: 10px;
+	padding-left: 8px;
+	padding-top: 10px;
+	width: 100%;
+	text-align: left;
+	border-top-left-radius: 6px;
+	border-top-right-radius: 6px;
+	font-size: 16px;
+	text-shadow: #E8E8E8 2px 2px 0;
 }
 
 /* Button design for toggle */
@@ -47,21 +92,24 @@ input.toggle {
 	background-color: white;
 	border: 1px double blue;
 	color: blue;*/
+	
 }
 
-/* Filters */
 #Filters {
-	position: relative;
-	margin-top: 40px;
+	/*position: relative;*/
+	/*margin-top: 40px;*/
+	width: 100%;
 	height: 220px;
 	display: none;
 	float: left;
-	padding-bottom: 100px;
+	padding: 20px;
+	padding-bottom: 50px;
+	background: #edf3fb;
 }
 
 /* Filters left */
 #AddFilters {
-	margin-top: 10px;
+	/*margin-top: 10px;*/
 	float: left;
 	text-align: left;
 	width: 50%;
@@ -158,6 +206,7 @@ div#allcomments {
 div#Buttons {
 	text-align: left;
 	padding: 15px;
+	padding-top: 40px;
 }
 
 

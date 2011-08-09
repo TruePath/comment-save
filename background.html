@@ -107,16 +107,6 @@
 		setItem("deleteCheck", "0");
 	}
 	
-	/**
-	 * TEMPORARY: Create variables for timedDeletion and deletionTime
-	 */
-	//if (deletionTime == null) {
-		// 1 minute?
-		//var t = 20 * 1000;
-		//setItem("deletionTime", t);
-	//} */
-	/** END TEMPORARY **/
-	
 	// Now start time loop - checks after every minute
 	// whether to delete all the comments or not
 	checkTimedDeletion();
@@ -162,7 +152,7 @@
 	// checks every minute to see whether to delete the comments or not
 	function checkTimedDeletion() {
 		// change to 60 seconds?
-		var t=setTimeout("alertMsg()",20000);
+		var t=setTimeout("alertMsg()",60000);
 	}
 	
 	
