@@ -63,6 +63,9 @@
 		// all the filters
 		redrawFilters();
 		
+		// timed deletion settings
+		loadTimedDeletionSettings();
+		
 	}
 	
 	// adds all the comments on the display page
@@ -375,6 +378,68 @@
 	       FOR TIMED DELETION
 		   
 	***************************************************/
+	function loadTimedDeletionSettings() {
+		// check if it's enabled
+		var check = chrome.extension.getBackgroundPage().getItem("deleteCheck");
+		
+		if (check != null) {
+			if (check == "0") {
+				document.getElementById("timedDeletionCheck").checked = false;
+				
+				// disable the timed options
+				disableTimingSettings(true);
+			}
+			else {
+				document.getElementById("timedDeletionCheck").checked = true;
+				
+				// enable the timed options
+				disableTimingSettings(false);
+			}
+			
+			// now load the saved time
+			var time = parseInt(chrome.extension.getBackgroundPage().getItem("deletionTime"));
+			if (time == null || time == 0)
+				updateTimedValues(0, 0, 0, 0);
+			else {
+				// get number of months first
+				var months = Math.floor(time / 2628000000);
+				
+				// number of days
+				time = time - (months * 2628000000);
+				var days = Math.floor(time / 86400000);
+				
+				// number of hours
+				time = time - (days * 86400000);
+				var hours = Math.floor(time / 3600000);
+				
+				// number of minutes
+				time = time - (hours * 3600000);
+				var minutes = Math.floor(time / 60000);
+				
+				// update the values
+				updateTimedValues(minutes, hours, days, months);	
+			}
+		}
+		
+	}
+	
+	// Updates the time settings values
+	function updateTimedValues(minutes, hours, days, months) {
+		document.getElementById("minutes").value = minutes;
+		document.getElementById("hours").value = hours;
+		document.getElementById("days").value = days;
+		document.getElementById("months").value = months;
+	}
+	
+	// Disable timing settings
+	function disableTimingSettings(disable) {
+		var children = document.getElementById("timedOptions").childNodes;
+		var l = children.length;
+		for(i = 0; i < l; i++) {
+			var child = children[i];
+			child.disabled = disable;
+		}
+	}
 	
 	// Enables/disables timed deletion
 	function toggleTimedDeletion() {
@@ -382,15 +447,16 @@
 		var check = document.getElementById("timedDeletionCheck").checked;
 		
 		// enable/disable all the timed options
-		var children = document.getElementById("timedOptions").childNodes;
-		var l = children.length;
-		for(i = 0; i < l; i++) {
-			var child = children[i];
-			child.disabled = check;
-		}
+		disableTimingSettings(!check);
 		
 		// enable the local storage id in the background
-		chrome.extension.getBackgroundPage().setItem("deleteCheck", check);
+		var val;
+		if (check == true)
+			val = 1;
+		else 
+			val = 0;
+			
+		chrome.extension.getBackgroundPage().setItem("deleteCheck", val);
 	}
 	
 	// Only allows numbers in input fields
@@ -452,6 +518,13 @@
 			alert("All comments will be deleted in: \n" +
 			 	   minutes + " minute(s), " + hours + " hour(s), " + days + " day(s), " + months + " month(s), ");
 			
+			// Now set the variables at the backend
+			// get the currentTime
+			var recordedTime = (new Date()).getTime();
+			chrome.extension.getBackgroundPage().setItem("time", recordedTime);
+			
+			// deletionTime
+			chrome.extension.getBackgroundPage().setItem("deletionTime", totalTime);
 		}
 	}
 	

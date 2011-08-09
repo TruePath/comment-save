@@ -101,17 +101,19 @@
 		setItem("time", recordedTime);
 	}
 
+	// Check if timed deletion check has been created or not. If it's not, then create it and set it to false
+	if (timedDeletionCheck == null) {
+		// make it false
+		setItem("deleteCheck", "0");
+	}
+	
 	/**
 	 * TEMPORARY: Create variables for timedDeletion and deletionTime
 	 */
-	/*if (timedDeletionCheck == null) {
-		// make it true
-		setItem("deleteCheck", "true");
-	}
 	//if (deletionTime == null) {
 		// 1 minute?
-		var t = 20 * 1000;
-		setItem("deletionTime", t);
+		//var t = 20 * 1000;
+		//setItem("deletionTime", t);
 	//} */
 	/** END TEMPORARY **/
 	
@@ -124,7 +126,7 @@
 	// The function to delete all the comments
 	function alertMsg()
 	{
-		if (getItem("deleteCheck") == "true") { // if it's false or does not exist it will do nothing
+		if (getItem("deleteCheck") == "1") { // if it's false or does not exist it will do nothing
 			// Has enough time passed?
 			// get current time
 			var currentTime = (new Date()).getTime();
@@ -143,6 +145,7 @@
 				// delete if enough time has passed
 				if (currentTime >= futureTime) {
 					log("/// Window timeout ////");
+					deleteAllComments();
 					
 					// log a new time
 					var recordedTime = (new Date()).getTime();
