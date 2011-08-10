@@ -86,20 +86,9 @@
 
 	/////////// START TIMING METHODS ////////////
 	
-	// First check if date/time are stored
-	var time = getItem("time");
-	
 	// Check if timed deletion is enabled & the user-specified time
 	var timedDeletionCheck = getItem("deleteCheck");
 	var deletionTime = getItem("deletionTime");
-	
-	// time variable does not exist, so record it first
-	if (time == null) {
-		// get the time
-		var recordedTime = (new Date()).getTime();
-				
-		setItem("time", recordedTime);
-	}
 
 	// Check if timed deletion check has been created or not. If it's not, then create it and set it to false
 	if (timedDeletionCheck == null) {
@@ -121,39 +110,20 @@
 			// get current time
 			var currentTime = (new Date()).getTime();
 			
-			// future time = stored time variable + deletion time
-			//var storedTime = parseInt(getItem("time"));
-			
 			// Stored time = the time of the comment
 			var deletionTime = parseInt(getItem("deletionTime"));
 			
 			// Go through all the comments
-			
-			
+		
 			// null check
 			if (deletionTime != null) {
-				//var futureTime = storedTime + deletionTime;
 				
 				// load all the items
 				database.webdb.getAllComments(timedDeleteComments);
-				
-				/*log("Current Time: " + currentTime);
-				log("Future Time: " + futureTime);
-				
-				// delete if enough time has passed
-				if (currentTime >= futureTime) {
-					log("/// Window timeout ////");
-					deleteAllComments();
-					
-					// log a new time
-					var recordedTime = (new Date()).getTime();
-					setItem("time", recordedTime);
-				}*/
 			}
 		}
 		
 		// loop
-		//log("calling timed deletion again//////");
 		setTimeout("checkTimedDeletion();", 1000); // after every 1 second?
 	}
 	
@@ -174,8 +144,7 @@
 			if (row.comment.length > 1 && idAdded.indexOf(row.ID) == -1) {
 				// parse the date
 				var commentTime = parseDate(row.timestamp);
-				//alert("Comment Time: " + commentTime + ", Current Time: " + currentTime);
-				
+
 				// delete if enough time has passed
 				if (currentTime >= (commentTime + deletionTime)) {
 					//alert("Time has passed");

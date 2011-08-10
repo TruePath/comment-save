@@ -398,7 +398,7 @@
 			
 			// now load the saved time
 			var time = parseInt(chrome.extension.getBackgroundPage().getItem("deletionTime"));
-			if (time == null || time == 0)
+			if (time == null || time == 0 || isNaN(time))
 				updateTimedValues(0, 0, 0, 0);
 			else {
 				// get number of months first
@@ -567,8 +567,8 @@
 		<!--<hr>-->
 			<div id='AddFilters'>			<!-- Left-side: For adding filters -->
 				Filters allow you to disable tracking on websites.<br>
-				Enter filters into the box below (one per line). For example, if you don't want your comments on
-				Facebook tracked enter "facebook.com" (without the quotes).<br><br>
+				Enter filters into the box below (one per line). <br><i>For example, if you don't want your comments on
+				Facebook tracked enter "facebook.com" (without the quotes).</i><br><br>
 				<textarea cols="40" rows="6" id="newFilters"></textarea><br><br>
 				<input type="button" class="filterbuttons" value="Add New Filters" onClick="addFilters();">
 			</div>
