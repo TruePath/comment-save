@@ -88,7 +88,7 @@ function sendMessage(obj, event) {
 	}
 	
 	var actualkey=String.fromCharCode(characterCode);
-
+	
 	// get the id - if it already exists good otherwise give it one 
 
 	// GET ID from local storage
@@ -180,7 +180,7 @@ chrome.extension.onRequest.addListener(
 $(document).ready(function(){
 	
 	// google+ check:
-	$(".v-J-n-m-Gc").live('keypress', function(event) {
+	$(".r-q-i-h-Oc").live('keyup', function(event) { // .v-J-n-m-Gc does not work anymore... (August 27th)
 		// send the message
 		sendMessage(this, event);
 	});

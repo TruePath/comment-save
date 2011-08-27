@@ -1,6 +1,6 @@
 {
   "name": "Comment Save",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "Keeps tracks of your comments/posts as you type. Allows you to quickly look up the last one you wrote and your history.",
   "background_page": "background.html",
   "options_page": "allcomments.html",
