@@ -180,7 +180,8 @@ chrome.extension.onRequest.addListener(
 $(document).ready(function(){
 	
 	// google+ check:
-	$(".r-q-i-h-Oc").live('keyup', function(event) { // .v-J-n-m-Gc does not work anymore... (August 27th)
+	//.r-q-i-h-Oc doesn't work anymore (Sept 4)
+	$(".m-n-f-ba-rd").live('keyup', function(event) { // .v-J-n-m-Gc does not work anymore... (August 27th) 
 		// send the message
 		sendMessage(this, event);
 	});
