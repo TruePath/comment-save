@@ -1,11 +1,12 @@
 {
   "name": "Comment Save",
   "version": "0.5.3",
+  "manifest_version": 2,
   "description": "Keeps tracks of your comments/posts as you type. Allows you to quickly look up the last one you wrote and your history.",
-  "background_page": "background.html",
+  "background": {"scripts":["background.js"]},
   "options_page": "allcomments.html",
   "permissions": [
-    "tabs", "http://*/*", "https://*/*",
+    "tabs", "http://*/*", "https://*/*", "background",
 	"contextMenus"
    ],
   "content_scripts": [
