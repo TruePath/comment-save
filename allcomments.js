@@ -8,6 +8,10 @@
 // debugging
 var logging = true;
 
+/**************************************************
+	DATABASE FUNCTIONS
+**************************************************/
+
 // webdb stuff
 var database = {};
 database.webdb = {};
@@ -45,18 +49,7 @@ database.webdb.getComment = function(renderFunc, id) {
 	});
 }
 
-// start
-function start() {
-	// all the comments
-	addAllComments();
-	
-	// all the filters
-	redrawFilters();
-	
-	// timed deletion settings
-	loadTimedDeletionSettings();
-	
-}
+
 
 // adds all the comments on the display page
 function addAllComments() {
@@ -97,6 +90,55 @@ function loadComments(tx, rs) {
 			idAdded.push(row.ID);
 		}
 	}
+}
+
+// for the context menu checkbox
+function loadContextMenuSettings() {
+	// check if it's enabled
+	var check = chrome.extension.getBackgroundPage().getItem("contextMenu");
+	
+	if (check != null) {
+		if (check == "0")
+			document.getElementById("contextMenuCheck").checked = false;
+		else
+			document.getElementById("contextMenuCheck").checked = true;
+	}
+	
+}
+
+// Enables/disables context menus
+function toggleContextMenus() {
+	// is it checked?
+	var check = document.getElementById("contextMenuCheck").checked;
+	
+	// enable/disable context menus
+	chrome.extension.getBackgroundPage().toggleContextMenus(check);
+	
+	// enable the local storage id in the background
+	var val;
+	if (check == true)
+		val = 1;
+	else 
+		val = 0;
+		
+	chrome.extension.getBackgroundPage().setItem("contextMenu", val);
+}
+
+
+// start
+function start() {
+	// all the comments
+	addAllComments();
+	
+	// all the filters
+	redrawFilters();
+	
+	// context menu settings
+	loadContextMenuSettings();
+	
+	// timed deletion settings
+	loadTimedDeletionSettings();
+	
 }
 
 // renders to the table	
@@ -524,6 +566,9 @@ function setTimedDeletion() {
 
 // on load page
 document.addEventListener('DOMContentLoaded', function () {
+	// contextMenuCheck
+	document.getElementById('contextMenuCheck').addEventListener('click', toggleContextMenus);
+	
 	// timed deletion check
 	document.getElementById('timedDeletionCheck').addEventListener('click', toggleTimedDeletion);
 	

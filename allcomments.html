@@ -23,12 +23,13 @@
 		<!-- Timed deletion options --> <!-- TODO: Remember to populate these values on load -->
 		<div id='timedDeletion'>
 			<div id='timedHeader'>
-			Timed Deletion Options <i id="timeItalics">(<b>NOTE:</b> This deletes ALL of your comments older than the time you set)</i>:
+			Context Menu & Timed Deletion Options <i id="timeItalics">(<b>NOTE:</b> This deletes ALL of your comments older than the time you set)</i>:
 			</div>
 			<!-- Checkbox for enabling/disabling timed options -->
 			
 			<!-- User-setting time -->
 			<div id='timeObjects'>
+				<b><em>Enable Context Menus?</em></b>&nbsp;&nbsp;&nbsp;<input type = "checkbox" id="contextMenuCheck"/><br>
 				<b><em>Enable timed Deletion?</em></b>&nbsp;&nbsp;&nbsp;<input type = "checkbox" id="timedDeletionCheck"/><br>
 				<div id='timedOptions'>
 				Minutes: <input type="text" class="time" id="minutes" maxlength="3" style="width:30px" >
@@ -42,6 +43,7 @@
 		</div>
 		<!-- Button to display/hide filters -->
 		<br>
+		
 		<!--<hr>-->
 		<div id='filterToggle'>
 			<input type="button" class="toggle" value="+" id="filterToggleButton">&nbsp;Filters <i id="timeItalics">(<b>NOTE:</b> Click the '+' to view filter settings)</i>:
@@ -67,9 +69,10 @@
 			</div>
 			<!-- <a href="filters.html">View/Edit Filters</a> -->
 		</div>
+		
 		<br><br><br>
-		<!--<hr>-->
 		<div id='Buttons'>					<!-- Delete buttons -->
+		<!--<hr>-->
 			<input type="button" class="delete" value="Delete Checked Comments" id="deleteCheckedCommentsButton" >
 			<input type="button" class="delete" value="Delete All Comments" id="deleteAllCommentsButton" >
 		</div>

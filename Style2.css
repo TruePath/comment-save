@@ -31,10 +31,10 @@ div#holder {
 
 
 
-/* Timed Deletion objects */
+/* Context Menu & Timed Deletion objects */
 div#timedDeletion {
 	/*margin-left: 5%;*/
-	height: 15%;
+	height: 16%;
 	text-align: left;
 	/*padding: 10px;*/
 	padding-bottom: 60px;
@@ -122,7 +122,7 @@ input.toggle {
 	float: left;
 	text-align: left;
 	width: 50%;
-	height: 100%;
+	height: 30%;
 	line-height: 20px;
 }
 
@@ -134,7 +134,7 @@ input.toggle {
 	text-align: right;
 	width: 45%;
 	border-left: 1px solid #ccc;
-	height: 100%;
+	height: 30%;
 }
 
 #fText {
