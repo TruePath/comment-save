@@ -5,7 +5,7 @@
 	Sends a message to the background process after getting the id.
 	 
 	Author: Shayan Javed (shayanj at gmail.com)
-	Version 0.4 
+	Version 0.5.4
 	 
 	***/
 
@@ -45,6 +45,7 @@ var idReset = false;
 var id = 1;
 // Open the port to the extension
 var port = chrome.extension.connect({name: "comment"});
+console.log("Port is: " + port);
 
 // callback function (for divs)
 function sendMessage(obj, event) {
@@ -101,7 +102,8 @@ function sendMessage(obj, event) {
 	
 	// request id from background.html if not already set
 	if (idSet == 0) {
-		chrome.extension.sendRequest({idRequest: "id"}, function(response) {
+		chrome.extension.sendMessage({idRequest: "id"}, function(response) {
+			console.log("Response is: " + response);
 			requestedID = response.theId;
 			idSet = 1;
 			
@@ -244,7 +246,7 @@ $(document).ready(function(){
     	}
 		
 		var actualkey=String.fromCharCode(characterCode);
-
+		console.log("Key: " + actualkey);
     	// get the id - if it already exists good otherwise give it one 
 
 		// GET ID from local storage
@@ -259,7 +261,8 @@ $(document).ready(function(){
 		
 		// request id from background.html if not already set
 		if (idSet == 0) {
-			chrome.extension.sendRequest({idRequest: "id"}, function(response) {
+			chrome.extension.sendMessage({idRequest: "id"}, function(response) {
+				console.log("Response is: " + response);
   				requestedID = response.theId;
 				idSet = 1;
 				

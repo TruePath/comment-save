@@ -1,18 +1,20 @@
 {
   "name": "Comment Save",
-  "version": "0.5.3",
-  "manifest_version": 2,
+  "version": "0.5.4",
+  "manifest_version": 2, 
   "description": "Keeps tracks of your comments/posts as you type. Allows you to quickly look up the last one you wrote and your history.",
-  "background": {"scripts":["background.js"]},
   "options_page": "allcomments.html",
+  "background":{
+	"scripts": ["background.js"]
+  },
   "permissions": [
-    "tabs", "http://*/*", "https://*/*", "background",
+    "tabs", "http://*/*", "https://*/*",
 	"contextMenus"
    ],
   "content_scripts": [
     {
       "matches": ["http://*/*", "https://*/*", "file://*/*"],
-      "js": ["jquery.js", "page.js"],
+      "js": ["jquery.js", "page.js", "popup.js", "allcomments.js"],
 	  "run_at": "document_end",
 	  "all_frames": true
     }
@@ -23,6 +25,6 @@
   "browser_action": {
     "default_title": "Comment Save",
     "default_icon": "128nn.png",
-    "popup": "popup.html"
+    "default_popup": "popup.html"
   }
 }

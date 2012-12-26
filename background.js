@@ -1,21 +1,7 @@
-<!--
-	background.html
-	The background page which listens to all the requests and handles the database stuff (comments and filters).
-	Also handles local storage (variables)
-	 
-	Author: Shayan Javed (shayanj at gmail.com)
-	 
-	-->
-
-<html>
-<head>
-<script>
 	// global variables
 	var logging  = true;
 	
-	/************************
-	 *    HTML5 WEB DB BEGIN
-	 ************************/
+	////////// HTML5 WEB DB BEGIN //////////////
 	var database = {};
 	database.webdb = {};
 
@@ -27,18 +13,18 @@
   
 	// Listener - to listen for any messages sent from the extension.
 	// Messages are stored in the webdb
+	log("Checking for port");
 	try {
-		log("Testing!");
 		chrome.extension.onConnect.addListener(function(port) {
 			// check port name - "comment"
 			console.assert(port.name == "comment");
-			//log("Port: "+ port.name);
+			log("Port2: "+ port.name);
 			
 			// get the message
 			// values:
 			// {id: newId, text: this.value, title: document.tile, url: document.URL, time: timestamp});
 			port.onMessage.addListener(function(msg) {
-				//log("Message: " + msg.id + "," + msg.text + "," + msg.title + "," + msg.url + "," + msg.time);
+				log("Message: " + msg.id + "," + msg.text + "," + msg.title + "," + msg.url + "," + msg.time);
 				currentMsg = msg;
 				
 				// check if tracking is allowed
@@ -48,7 +34,8 @@
 				if (tracking == "1") {
 					checkFilter(msg.url);
 					
-					setTimeout("database.webdb.addComment();", 200);
+					//setTimeout("function(){database.webdb.addComment()}", 200);
+					setTimeout(database.webdb.addComment, 200);
 					//setTimeout("filter = false;", 200);
 				}
 			});
@@ -58,7 +45,7 @@
 	}
 
 	// ID REQUEST FROM LOCAL STORAGE //
-	chrome.extension.onRequest.addListener(
+	chrome.extension.onMessage.addListener(
 		function(request, sender, sendResponse) {
 			//log(sender.tab ? "from a content script:" + sender.tab.url : "from the extension");
 			if (request.idRequest == "id") {
@@ -101,7 +88,7 @@
 	
 	// Now start time loop - checks after every minute
 	// whether to delete all the comments or not
-	checkTimedDeletion();
+	//checkTimedDeletion();
 		
 	//var t=setTimeout("alertMsg()",4000);
 	
@@ -527,30 +514,7 @@
 		});
 	}
 	
-	// Toggle context menus
-	// Added December 24 2012
-	function toggleContextMenus(toggle) {
-		// enable context menus
-		if (toggle == true) {
-			// checkbox for enabling/disabling tracking
-			trackingMenu = chrome.contextMenus.create(
-				{"title": "Tracking?", "type": "checkbox", "checked": getTracking(), "onclick":onClickTracking});
-			
-			// option for adding current website to filters
-			filterMenu = chrome.contextMenus.create({"title": "Disable tracking on this website", "contexts":["page"],
-											   "onclick": addFilterMenu});
-		}
-		else { // remove
-			chrome.contextMenus.removeAll();
-		}
-	}
+	// Initialize the database
+	initDB();
 	
-</script>
-</head>
-
-<body onload="initDB();">
-</body>
-</html>
-
-
-<!-- END OF FILE -->
+//<!-- END OF FILE-->
