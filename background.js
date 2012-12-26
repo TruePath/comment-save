@@ -75,8 +75,8 @@
 	);
 
 	/////////// START TIMING METHODS ////////////
-	
 	// Check if timed deletion is enabled & the user-specified time
+	
 	var timedDeletionCheck = getItem("deleteCheck");
 	var deletionTime = getItem("deletionTime");
 
@@ -88,7 +88,7 @@
 	
 	// Now start time loop - checks after every minute
 	// whether to delete all the comments or not
-	//checkTimedDeletion();
+	checkTimedDeletion();
 		
 	//var t=setTimeout("alertMsg()",4000);
 	
@@ -114,7 +114,7 @@
 		}
 		
 		// loop
-		setTimeout("checkTimedDeletion();", 1000); // after every 1 second?
+		setTimeout(checkTimedDeletion, 1000); // after every 1 second?
 	}
 	
 	// tries to delete comments in the specified time
@@ -152,7 +152,7 @@
 	// checks every minute to see whether to delete the comments or not
 	function checkTimedDeletion() {
 		// change to 60 seconds?
-		var t=setTimeout("alertMsg()",60000);
+		var t=setTimeout(alertMsg,60000);
 	}
 	
 	// function which parses stored data and returns milliseconds
