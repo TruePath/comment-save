@@ -49,8 +49,6 @@ database.webdb.getComment = function(renderFunc, id) {
 	});
 }
 
-
-
 // adds all the comments on the display page
 function addAllComments() {
 	try {
@@ -106,6 +104,7 @@ function loadContextMenuSettings() {
 	
 }
 
+
 // Enables/disables context menus
 function toggleContextMenus() {
 	// is it checked?
@@ -113,19 +112,11 @@ function toggleContextMenus() {
 	
 	// enable/disable context menus
 	chrome.extension.getBackgroundPage().toggleContextMenus(check);
-	
-	// enable the local storage id in the background
-	var val;
-	if (check == true)
-		val = 1;
-	else 
-		val = 0;
-		
-	chrome.extension.getBackgroundPage().setItem("contextMenu", val);
 }
 
-
-// start
+/**************************************************
+	MAIN INIT function
+**************************************************/
 function start() {
 	// all the comments
 	addAllComments();
@@ -139,6 +130,8 @@ function start() {
 	// timed deletion settings
 	loadTimedDeletionSettings();
 	
+	// load positive filters settings
+	loadPositiveFilterSettings();
 }
 
 // renders to the table	
@@ -278,6 +271,29 @@ function toggleFilters() {
 		// hide the filters
 		div.style.display = 'none';
 	}
+}
+
+// for the positive filters checkbox
+function loadPositiveFilterSettings() {
+	// check if it's enabled
+	var check = chrome.extension.getBackgroundPage().getItem("positiveFilter");
+	
+	if (check != null) {
+		if (check == "0")
+			document.getElementById("positiveFilterCheck").checked = false;
+		else
+			document.getElementById("positiveFilterCheck").checked = true;
+	}
+	
+}
+
+// Enables/disables positive filters
+function togglePositiveFilter() {
+	// is it checked?
+	var check = document.getElementById("positiveFilterCheck").checked;
+	
+	// enable/disable positive filters
+	chrome.extension.getBackgroundPage().togglePositiveFilter(check);
 }
 
 // adds filters provided by the user
@@ -583,6 +599,8 @@ document.addEventListener('DOMContentLoaded', function () {
 	
 	// toggle filters
 	document.getElementById('filterToggleButton').addEventListener('click', toggleFilters);
+	// positive filters
+	document.getElementById('positiveFilterCheck').addEventListener('click', togglePositiveFilter);
 	// add filters
 	document.getElementById('addFiltersButton').addEventListener('click', addFilters);
 	// delete filters

@@ -146,8 +146,6 @@ function timedDeleteComments(tx, rs) {
 	}
 }
 
-
-
 // checks every minute to see whether to delete the comments or not
 function checkTimedDeletion() {
 	// change to 60 seconds?
@@ -170,35 +168,7 @@ function parseDate(date) {
 	return parseInt(date.getTime());
 }
 
-// Checks if tracking is enabled or not
-function checkTracking() {
-	var check = getItem("tracking");
-	// if tracking is not enabled create the key
-	log("CHECK IS: " + check);
-	if (check == null) {
-		log("LOCAL STORAGE: got null!");
-		setItem("tracking", "1"); // 1 - enabled, 0 - disabled
-		return "1";
-	}
-	else {
-		return check;
-	}
-}
 
-// Checks if context menus are enabled or not
-function checkContextMenu() {
-	var check = getItem("contextMenu");
-	// if tracking is not enabled create the key
-	log("CHECK IS: " + check);
-	if (check == null) {
-		log("LOCAL STORAGE: got null!");
-		setItem("contextMenu", "1"); // 1 - enabled, 0 - disabled
-		return "1";
-	}
-	else {
-		return check;
-	}
-}
 
 /**************************************************
 	LOCAL STORAGE METHODS START
@@ -239,6 +209,51 @@ function clearStrg() {
 	window.localStorage.setItem("currentID", 1);
 	//window.localStorage.clear();
 	log('*** cleared ***');
+}
+
+// Checks if tracking is enabled or not
+function checkTracking() {
+	var check = getItem("tracking");
+	// if tracking is not enabled create the key
+	log("CHECK IS: " + check);
+	if (check == null) {
+		log("LOCAL STORAGE: got null!");
+		setItem("tracking", "1"); // 1 - enabled, 0 - disabled
+		return "1";
+	}
+	else {
+		return check;
+	}
+}
+
+// Checks if context menus are enabled or not
+function checkContextMenu() {
+	var check = getItem("contextMenu");
+	// if tracking is not enabled create the key
+	log("CHECK IS: " + check);
+	if (check == null) {
+		log("LOCAL STORAGE: got null!");
+		setItem("contextMenu", "1"); // 1 - enabled, 0 - disabled
+		return "1";
+	}
+	else {
+		return check;
+	}
+}
+
+// Checks if context menus are enabled or not
+function checkPositiveFilter() {
+	var check = getItem("positiveFilter");
+	// if tracking is not enabled create the key
+	log("CHECK IS: " + check);
+	if (check == null) {
+		log("LOCAL STORAGE: got null!");
+		setItem("positiveFilter", "0"); // 1 - enabled, 0 - disabled
+		return "0";
+	}
+	else {
+		return check;
+	}
 }
 
 // log function
@@ -337,60 +352,6 @@ function getCommentCB(tx, rs) {
 		row = rs.rows.item(0);
 }
 
-/******* FILTER FUNCTIONS **********/
-var filterFound = false;
-var website = "";
-
-// adds a filter to the table - gets a url from the textarea
-database.webdb.addFilter = function(filter) {
-	// SQL transaction
-	database.webdb.db.transaction(function(tx){
-		tx.executeSql('INSERT INTO filters(website) VALUES (?)', 
-		[filter],
-		database.webdb.onSuccess,
-		database.webdb.onError);
-	});
-}
-
-// SQL query to get all the filters
-database.webdb.getAllFilters = function(renderFunc) {
-	database.webdb.db.transaction(function(tx) {
-		tx.executeSql('SELECT * FROM filters', [], renderFunc, 
-					database.webdb.onError);
-	});
-}
-
-// Loads all the filters and checks if the website is to be filtered or not
-function loadFilters(tx, rs) {
-	//alert("Website is: " + website);
-	var rowOutput = "";
-	var l = rs.rows.length;
-	for (var i=0; i < l; i++) {
-		var row = rs.rows.item(i);
-		log("Filter: " + row.website);
-		if (website.indexOf(row.website) != -1) { // filter found
-			log("Website blocked!");
-			filterFound = true;
-			return;
-		}
-	}
-	
-	// no filter
-	filterFound = false;
-	return;
-}
-
-// checks whether to filter out this url or not
-function checkFilter(url) {
-	// split the url
-	var splits = url.split('/');
-	// the location + hostname
-	website = splits[2];
-	
-	// load all the filters
-	database.webdb.getAllFilters(loadFilters);
-}
-
 // add data to table
 // {id: newId, text: this.value, title: document.tile, url: document.URL, time: timestamp});
 database.webdb.addComment = function() {
@@ -398,8 +359,9 @@ database.webdb.addComment = function() {
 	//setTimeout("log(waiting)", 500);
 	
 	log("Filter IS: " + filterFound);
+	log("Positive Filter IS: " + positiveFilter);
 	
-	if (filterFound == false && currentMsg != null) {
+	if (( (!filterFound  && !positiveFilter) || (filterFound && positiveFilter)) && currentMsg != null) {
 		// SQL transaction
 		database.webdb.db.transaction(function(tx){
 			// check to see if the data already exists or not
@@ -474,6 +436,88 @@ function initDB() {
 	//deleteAll();
 }
 
+/**************************************************
+	FILTER FUNCTIONS
+**************************************************/
+var filterFound = false;
+var positiveFilter = false;
+var website = "";
+
+// add context menus
+togglePositiveFilter(getPositiveFilter());
+
+// gets the positive filter variable
+function getPositiveFilter() {
+	var f = checkPositiveFilter();
+	if (f == "1")
+		return true;
+	else
+		return false;
+}
+
+// Toggle positive filter
+function togglePositiveFilter(toggle) {
+	// enable positive filter
+	if (toggle == true) {
+		setItem("positiveFilter", "1");
+		positiveFilter = true;
+	}
+	else { // disable
+		setItem("positiveFilter", "0");
+		positiveFilter = false;
+	}
+}
+
+// adds a filter to the table - gets a url from the textarea
+database.webdb.addFilter = function(filter) {
+	// SQL transaction
+	database.webdb.db.transaction(function(tx){
+		tx.executeSql('INSERT INTO filters(website) VALUES (?)', 
+		[filter],
+		database.webdb.onSuccess,
+		database.webdb.onError);
+	});
+}
+
+// SQL query to get all the filters
+database.webdb.getAllFilters = function(renderFunc) {
+	database.webdb.db.transaction(function(tx) {
+		tx.executeSql('SELECT * FROM filters', [], renderFunc, 
+					database.webdb.onError);
+	});
+}
+
+// Loads all the filters and checks if the website is to be filtered or not
+function loadFilters(tx, rs) {
+	//alert("Website is: " + website);
+	var rowOutput = "";
+	var l = rs.rows.length;
+	for (var i=0; i < l; i++) {
+		var row = rs.rows.item(i);
+		log("Filter: " + row.website);
+		if (website.indexOf(row.website) != -1) { // filter found
+			log("Website blocked!");
+			filterFound = true;
+			return;
+		}
+	}
+	
+	// no filter
+	filterFound = false;
+	return;
+}
+
+// checks whether to filter out this url or not
+function checkFilter(url) {
+	// split the url
+	var splits = url.split('/');
+	// the location + hostname
+	website = splits[2];
+	
+	// load all the filters
+	database.webdb.getAllFilters(loadFilters);
+}
+
 // pause function - used for synchronizing events
 function pause(milliseconds) {
 	var dt = new Date();
@@ -486,14 +530,6 @@ function pause(milliseconds) {
 
 // add context menus
 toggleContextMenus(getContextMenu());
-
-// checkbox for enabling/disabling tracking
-/*var trackingMenu = chrome.contextMenus.create(
-	{"title": "Tracking?", "type": "checkbox", "checked": getTracking(), "onclick":onClickTracking});
-
-// option for adding current website to filters
-var filterMenu = chrome.contextMenus.create({"title": "Disable tracking on this website", "contexts":["page"],
-								   "onclick": addFilterMenu});*/
 								   
 // gets the context menu variable
 function getContextMenu() {
@@ -503,6 +539,32 @@ function getContextMenu() {
 	else
 		return false;
 }
+
+// Toggle context menus
+// Added December 24 2012
+function toggleContextMenus(toggle) {
+	// enable context menus
+	if (toggle == true) {
+		// checkbox for enabling/disabling tracking
+		trackingMenu = chrome.contextMenus.create(
+			{"title": "Tracking?", "type": "checkbox", "checked": getTracking(), "onclick":onClickTracking});
+		
+		// option for adding current website to filters
+		filterMenu = chrome.contextMenus.create({"title": "Disable tracking on this website", "contexts":["page"],
+										   "onclick": addFilterMenu});
+										   
+		setItem("contextMenu", "1");
+	}
+	else { // remove
+		chrome.contextMenus.removeAll();
+		setItem("contextMenu", "0");
+	}
+}
+
+
+/**************************************************
+	TRACKING
+**************************************************/
 
 // gets the tracking variable
 function getTracking() {
@@ -542,25 +604,6 @@ function addFilterMenu(info, tab) {
 		
 	});
 }
-
-// Toggle context menus
-// Added December 24 2012
-function toggleContextMenus(toggle) {
-	// enable context menus
-	if (toggle == true) {
-		// checkbox for enabling/disabling tracking
-		trackingMenu = chrome.contextMenus.create(
-			{"title": "Tracking?", "type": "checkbox", "checked": getTracking(), "onclick":onClickTracking});
-		
-		// option for adding current website to filters
-		filterMenu = chrome.contextMenus.create({"title": "Disable tracking on this website", "contexts":["page"],
-										   "onclick": addFilterMenu});
-	}
-	else { // remove
-		chrome.contextMenus.removeAll();
-	}
-}
-
 
 // Initialize the database
 initDB();
