@@ -304,6 +304,9 @@ document.addEventListener('DOMContentLoaded', function () {
 	// toggle tracking
 	document.getElementById('trackingCheckbox').addEventListener('click', toggleTracking);
   
+	// comment select
+	document.getElementById('select').addEventListener('click', selectText);
+  
 	// initialize
 	start();
 });

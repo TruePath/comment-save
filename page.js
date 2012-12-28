@@ -4,8 +4,7 @@
     Detects any textareas/divs to listen to and records the text.
 	Sends a message to the background process after getting the id.
 	 
-	Author: Shayan Javed (shayanj at gmail.com)
-	Version 0.5.4
+	Author: Shayan Javed (shayanj at gmail.com
 	 
 	***/
 
@@ -69,7 +68,7 @@ function sendMessage(obj, event) {
 	catch (e) {
 		//alert("ERROR: " + e);
 	}
-
+	
 	// DON'T CHANGE THE NAME
 	var idSet = 0;
 	
@@ -181,11 +180,66 @@ chrome.extension.onRequest.addListener(
 // Instead of using onload, use JQuery:
 $(document).ready(function(){
 	
-	// google+ check:
-	//.r-q-i-h-Oc doesn't work anymore (Sept 4)
-	$(".m-n-f-ba-rd").live('keyup', function(event) { // .v-J-n-m-Gc does not work anymore... (August 27th) 
-		// send the message
-		sendMessage(this, event);
+		// google+ check:
+		//.r-q-i-h-Oc doesn't work anymore (Sept 4)
+		// .m-n-f-ba-rd doesn't work
+		/*$("#:1t.f").on('keyup', function(event) { // .v-J-n-m-Gc does not work anymore... (August 27th) 
+			// send the message
+			sendMessage(this, event);
+		});*/
+		// new google+ check (dec 27)
+		// for writing status
+		/*$('div.xe').bind('keyup', function(event) { // .v-J-n-m-Gc does not work anymore... (August 27th) 
+			// send the message
+			// alert("KEY UP!");
+			sendMessage(this, event);
+		});
+		// for comments
+		$('div.Lj.FE').bind('keyup', function(event) { // .v-J-n-m-Gc does not work anymore... (August 27th) 
+			// send the message
+			// alert("KEY UP!");
+			sendMessage(this, event);
+		});*/
+		
+		// another google+ check
+		if (location.hostname.indexOf('plus.google.com') != -1) { // disqus comment check
+			// taken from:
+			// http://stackoverflow.com/questions/2844565/is-there-a-jquery-dom-change-listener
+			/*MutationObserver = window.WebKitMutationObserver;
+
+			var obs = new MutationObserver(function(mutations, observer) {
+				// fired when a mutation occurs
+				console.log(mutations, observer);
+				// ...
+				//sendMessage(mutations);
+			});
+
+			
+			divs = document.getElementsByClassName('yd.editable');//$('div.yd.editable').get();
+			console.log(divs);
+			
+			// define what element should be observed by the observer
+			// and what types of mutations trigger the callback
+			obs.observe(divs, {
+			  subtree: true,
+			  attributes: true,
+			  characterData: true
+			});*/
+			/*$('div.yd.editable').livequery('DOMCharacterDataModified', function(event) {
+				//alert("Detected change charttr!");
+				console.log("Character");
+				sendMessage(this, event);
+			});*/
+			$('div.yd.editable').live('DOMCharacterDataModified', function(event) {
+				//alert("Detected change charttr!");
+				console.log("Character");
+				sendMessage(this, event);
+			});
+		}
+	
+	// new disqus check
+	$('div.textarea').on('keyup', function(event) {
+		
 	});
 	
 	// check disqus
@@ -195,7 +249,7 @@ $(document).ready(function(){
   		
 		if (commentBox) {
 			
-			$('#comment').live('keypress', function(event) {
+			$('#comment').on('keypress', function(event) {
 				// call the function - pass in the event and the object
 				sendMessage(this, event);
 				
@@ -205,7 +259,7 @@ $(document).ready(function(){
 	}
 
 	// attach function to all textareas
-	$("textarea").live('keyup', function(event) {
+	$("textarea").on('keyup', function(event) {
 		// iframe test - FOR DISQUS
 		var iTitle = document.title;
 		var theURL = document.URL; 

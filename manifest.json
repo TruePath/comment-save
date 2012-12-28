@@ -1,6 +1,6 @@
 {
   "name": "Comment Save",
-  "version": "0.6",
+  "version": "0.6.2",
   "manifest_version": 2, 
   "description": "Keeps tracks of your comments/posts as you type. Allows you to quickly look up the last one you wrote and your history.",
   "options_page": "allcomments.html",
