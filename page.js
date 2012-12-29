@@ -54,8 +54,8 @@ function sendMessage(obj, event) {
 	
 	try {
 		if (window != window.top) {
-			if (location.hostname.indexOf('.disqus.com') != -1) { // disqus comment check
-				iTitle = getDisqusTitle(theURL);//"Disqus Comment";
+			if (location.hostname.indexOf('disqus.com') != -1) { // disqus comment check
+				iTitle = getDisqusTitle(theURL);
 			}
 			else {
 				iTitle = "Disqus Comment";
@@ -75,8 +75,12 @@ function sendMessage(obj, event) {
 	// try to get the data attribute
 	var data;
 	try {
-		data = obj.getAttribute("data-cs");//this.dataset.cs;//data-cs;
-		idSet = 1;
+		data = obj.getAttribute("data-cs");
+		if (data == null) // noticed for disqus
+			idSet = 0;
+		else
+			idSet = 1;
+		console.log("Data: " + data);
 	} catch (error) {
 		idSet = 0;
 	}
@@ -101,12 +105,14 @@ function sendMessage(obj, event) {
 	
 	// request id from background.html if not already set
 	if (idSet == 0) {
+		console.log("Sending message");
 		chrome.extension.sendMessage({idRequest: "id"}, function(response) {
 			console.log("Response is: " + response);
 			requestedID = response.theId;
 			idSet = 1;
 			
 			obj.setAttribute("data-cs", requestedID);
+			console.log("Set ID: " + requestedID);
 		});
 	}
 	
@@ -134,6 +140,7 @@ function sendMessage(obj, event) {
 		
 		// send the message
 		try {
+			console.log("Sending message");
 			port.postMessage({id: divID, text: val, title: iTitle, url: theURL, time: timestamp});
 		} catch(e) {
 			//("There was an error: " + e);
@@ -179,73 +186,84 @@ chrome.extension.onRequest.addListener(
 
 // Instead of using onload, use JQuery:
 $(document).ready(function(){
-	
-		// google+ check:
-		//.r-q-i-h-Oc doesn't work anymore (Sept 4)
-		// .m-n-f-ba-rd doesn't work
-		/*$("#:1t.f").on('keyup', function(event) { // .v-J-n-m-Gc does not work anymore... (August 27th) 
-			// send the message
+		
+	// another google+ check
+	if (location.hostname.indexOf('plus.google.com') != -1) {
+		// taken from:
+		// http://stackoverflow.com/questions/2844565/is-there-a-jquery-dom-change-listener
+		/*MutationObserver = window.WebKitMutationObserver;
+
+		var obs = new MutationObserver(function(mutations, observer) {
+			// fired when a mutation occurs
+			console.log(mutations, observer);
+			// ...
+			//sendMessage(mutations);
+		});
+
+		
+		divs = document.getElementsByClassName('yd.editable');//$('div.yd.editable').get();
+		console.log(divs);
+		
+		// define what element should be observed by the observer
+		// and what types of mutations trigger the callback
+		obs.observe(divs, {
+		  subtree: true,
+		  attributes: true,
+		  characterData: true
+		});*/
+		/*$('div.yd.editable').livequery('DOMCharacterDataModified', function(event) {
+			//alert("Detected change charttr!");
+			console.log("Character");
 			sendMessage(this, event);
 		});*/
-		// new google+ check (dec 27)
-		// for writing status
-		/*$('div.xe').bind('keyup', function(event) { // .v-J-n-m-Gc does not work anymore... (August 27th) 
-			// send the message
-			// alert("KEY UP!");
+		$('div.yd.editable').live('DOMCharacterDataModified', function(event) {
+			//alert("Detected change charttr!");
+			console.log("Character");
 			sendMessage(this, event);
 		});
-		// for comments
-		$('div.Lj.FE').bind('keyup', function(event) { // .v-J-n-m-Gc does not work anymore... (August 27th) 
-			// send the message
-			// alert("KEY UP!");
-			sendMessage(this, event);
-		});*/
-		
-		// another google+ check
-		if (location.hostname.indexOf('plus.google.com') != -1) { // disqus comment check
-			// taken from:
-			// http://stackoverflow.com/questions/2844565/is-there-a-jquery-dom-change-listener
-			/*MutationObserver = window.WebKitMutationObserver;
-
-			var obs = new MutationObserver(function(mutations, observer) {
-				// fired when a mutation occurs
-				console.log(mutations, observer);
-				// ...
-				//sendMessage(mutations);
-			});
-
-			
-			divs = document.getElementsByClassName('yd.editable');//$('div.yd.editable').get();
-			console.log(divs);
-			
-			// define what element should be observed by the observer
-			// and what types of mutations trigger the callback
-			obs.observe(divs, {
-			  subtree: true,
-			  attributes: true,
-			  characterData: true
-			});*/
-			/*$('div.yd.editable').livequery('DOMCharacterDataModified', function(event) {
-				//alert("Detected change charttr!");
-				console.log("Character");
-				sendMessage(this, event);
-			});*/
-			$('div.yd.editable').live('DOMCharacterDataModified', function(event) {
-				//alert("Detected change charttr!");
-				console.log("Character");
-				sendMessage(this, event);
-			});
-		}
+	}
 	
-	// new disqus check
-	$('div.textarea').on('keyup', function(event) {
-		
+	// disqus test (slashgear, etc.)
+	$('div.textarea').live('DOMCharacterDataModified', function(event) {
+		console.log("Disqus");
+		sendMessage(this, event);
 	});
 	
+	// livefyre test (engadget, etc.)
+	document.addEventListener('DOMNodeInserted', onNodeInserted, false);
+	function onNodeInserted(event) {
+		// find iframe first
+		if (event.target.className == 'fyre-roundedpanel-content editable') {
+			console.log("found classname");
+			
+			// then "#document"
+			var doc = $(event.target).contents()[0];//find('body');
+			// then body
+			var body = doc.activeElement;
+			
+			// then p
+			var p = $(body).contents()[0];
+			
+			// listen for changes
+			$(p).on('DOMCharacterDataModified', function(e) {
+				sendMessage(this, e);
+			});
+			
+		}
+	}
+	
 	// check disqus
-	if (location.hostname.indexOf('.disqus.com') != -1) {
+	// UPDATE: doesn't work anymore
+	/*if (location.hostname.indexOf('.disqus.com') != -1) {
+		// new disqus check
+		$('div.textarea').live('DOMCharacterDataModified', function(event) {
+			console.log("Disqus");
+			sendMessage(this, event);
+		});
+	
   		// Extract the textarea (there must be exactly one)
-  		var commentBox = document.querySelector('#comment');
+  		// UPDATE Dec 2012: Doesn't work anymore
+		var commentBox = document.querySelector('#comment');
   		
 		if (commentBox) {
 			
@@ -256,8 +274,9 @@ $(document).ready(function(){
 			});
     		
   		}
-	}
+	}*/
 
+	// For all other websites:
 	// attach function to all textareas
 	$("textarea").on('keyup', function(event) {
 		// iframe test - FOR DISQUS
