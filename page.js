@@ -278,7 +278,7 @@ $(document).ready(function(){
 
 	// For all other websites:
 	// attach function to all textareas
-	$("textarea").on('keyup', function(event) {
+	$("textarea").live('keyup', function(event) {
 		// iframe test - FOR DISQUS
 		var iTitle = document.title;
 		var theURL = document.URL; 
